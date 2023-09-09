@@ -27,7 +27,6 @@ kotlin {
     when {
         hostOs == "Mac OS X" && isArm64 -> macosArm64("native")
         hostOs == "Mac OS X" && !isArm64 -> macosX64("native")
-        hostOs == "Linux" && isArm64 -> linuxArm64("native")
         hostOs == "Linux" && !isArm64 -> linuxX64("native")
         isMingwX64 -> mingwX64("native")
         else -> throw GradleException("Host OS is not supported in Kotlin/Native.")
@@ -58,7 +57,13 @@ kotlin {
         val jvmTest by getting
         val nativeMain by getting {
             dependencies {
-                implementation("io.ktor:ktor-client-darwin:$ktorVersion")
+                when {
+                    hostOs == "Mac OS X" -> implementation("io.ktor:ktor-client-darwin:$ktorVersion")
+                    hostOs == "Linux"-> implementation("io.ktor:ktor-client-curl:$ktorVersion")
+                    isMingwX64 -> implementation("io.ktor:ktor-client-winhttp:$ktorVersion")
+                    else -> throw GradleException("Host OS is not supported in Kotlin/Native.")
+                }
+
             }
         }
         val nativeTest by getting
