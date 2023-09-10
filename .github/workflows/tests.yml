@@ -1,0 +1,75 @@
+name: 'Tests'
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  test-jvm:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run tests
+        run: ./gradlew jvmTest
+
+      - name: Test Report
+        uses: mikepenz/action-junit-report@v4
+        if: success() || failure()
+        with:
+          check_name: 'JVM Test Reports'
+          report_paths: '**/build/test-results/jvmTest/TEST-*.xml'
+
+  test-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install libcurl
+        run: sudo apt-get install -y libcurl4-gnutls-dev
+
+      - name: Run tests
+        run: ./gradlew nativeTest
+
+      - name: Test Report
+        uses: mikepenz/action-junit-report@v4
+        if: success() || failure()
+        with:
+          check_name: 'Linux Test Reports'
+          report_paths: '**/build/test-results/nativeTest/TEST-*.xml'
+
+  test-darwin:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run tests
+        run: ./gradlew nativeTest
+
+      - name: Test Report
+        uses: mikepenz/action-junit-report@v4
+        if: success() || failure()
+        with:
+          check_name: 'Darwin Test Reports'
+          report_paths: '**/build/test-results/nativeTest/TEST-*.xml'
+
+  test-mingw:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run tests
+        run: ./gradlew nativeTest
+
+      - name: Test Report
+        uses: mikepenz/action-junit-report@v4
+        if: success() || failure()
+        with:
+          check_name: 'Mingw Test Reports'
+          report_paths: '**/build/test-results/nativeTest/TEST-*.xml'
