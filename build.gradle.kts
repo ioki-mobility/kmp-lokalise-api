@@ -1,10 +1,8 @@
 plugins {
     kotlin("multiplatform") version "1.9.10"
     kotlin("plugin.serialization") version "1.9.10"
+    `maven-publish`
 }
-
-group = "com.ioki.lokalise"
-version = "0.0.1-SNAPSHOT"
 
 repositories {
     mavenCentral()
@@ -67,5 +65,51 @@ kotlin {
             }
         }
         val nativeTest by getting
+    }
+}
+
+group = "com.ioki"
+version = "0.0.1-SNAPSHOT"
+publishing {
+    publications {
+        publications.withType<MavenPublication> {
+            artifactId = artifactId.drop(4) // Get remove `kmp` from `kmo-lokalise-api[-jvm|-native]
+            pom {
+                url.set("https://github.com/ioki-mobility/kmp-lokalise-api")
+                licenses {
+                    license {
+                        name.set("MIT License")
+                        url.set("https://github.com/ioki-mobility/kmp-lokalise-api/blob/main/LICENSE")
+                    }
+                }
+                organization {
+                    name.set("ioki")
+                    url.set("https://ioki.com")
+                }
+                developers {
+                    developer {
+                        name.set("Stefan 'StefMa' M.")
+                        email.set("StefMaDev@outlook.com")
+                        url.set("https://StefMa.guru")
+                        organization.set("ioki")
+                    }
+                }
+                scm {
+                    url.set("https://github.com/ioki-mobility/kmp-lokalise-api")
+                    connection.set("https://github.com/ioki-mobility/kmp-lokalise-api.git")
+                    developerConnection.set("git@github.com:ioki-mobility/kmp-lokalise-api.git")
+                }
+            }
+        }
+    }
+
+    repositories {
+        maven("https://maven.pkg.github.com/ioki-mobility/kmp-lokalise-api") {
+            name = "GitHubPackages"
+            credentials {
+                username = project.findProperty("githubPackages.user") as? String
+                password = project.findProperty("githubPackages.key") as? String
+            }
+        }
     }
 }
