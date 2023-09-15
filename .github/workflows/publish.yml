@@ -1,0 +1,52 @@
+name: 'Publish'
+
+on:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  publish-kmp-metadata:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Publish metadata
+        run: ./gradlew publishKotlinMultiplatformPublicationToGitHubPackagesRepository -PgithubPackages.user=$GITHUB_ACTOR -PgithubPackages.key=${{ secrets.GITHUB_TOKEN }}
+
+  publish-jvm:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Publish jvm
+        run: ./gradlew publishJvmPublicationToGitHubPackagesRepository -PgithubPackages.user=$GITHUB_ACTOR -PgithubPackages.key=${{ secrets.GITHUB_TOKEN }}
+
+  publish-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Publish linux
+        run: ./gradlew publishNativePublicationToGitHubPackagesRepository -PgithubPackages.user=$GITHUB_ACTOR -PgithubPackages.key=${{ secrets.GITHUB_TOKEN }}
+
+  publish-darwin:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Publish darwin
+        run: ./gradlew publishNativePublicationToGitHubPackagesRepository -PgithubPackages.user=$GITHUB_ACTOR -PgithubPackages.key=${{ secrets.GITHUB_TOKEN }}
+
+  publish-mingw:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Publish mingw
+        run: ./gradlew publishNativePublicationToGitHubPackagesRepository -PgithubPackages\.user=$GITHUB_ACTOR -PgithubPackages\.key=${{ secrets.GITHUB_TOKEN }}
