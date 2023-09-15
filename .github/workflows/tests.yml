@@ -65,7 +65,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Run tests
-        run: ./gradlew nativeTest
+        run: ./gradlew.bat nativeTest
 
       - name: Test Report
         uses: mikepenz/action-junit-report@v4

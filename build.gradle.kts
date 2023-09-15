@@ -1,15 +1,16 @@
 plugins {
     kotlin("multiplatform") version "1.9.10"
     kotlin("plugin.serialization") version "1.9.10"
+    `maven-publish`
 }
-
-group = "com.ioki.lokalise"
-version = "0.0.1-SNAPSHOT"
 
 repositories {
     mavenCentral()
 }
 
+val hostOs = System.getProperty("os.name")
+val isArm64 = System.getProperty("os.arch") == "aarch64"
+val isMingwX64 = hostOs.startsWith("Windows")
 kotlin {
     jvm {
         jvmToolchain(8)
@@ -21,9 +22,6 @@ kotlin {
         }
     }
 
-    val hostOs = System.getProperty("os.name")
-    val isArm64 = System.getProperty("os.arch") == "aarch64"
-    val isMingwX64 = hostOs.startsWith("Windows")
     when {
         hostOs == "Mac OS X" && isArm64 -> macosArm64("native")
         hostOs == "Mac OS X" && !isArm64 -> macosX64("native")
@@ -59,7 +57,7 @@ kotlin {
             dependencies {
                 when {
                     hostOs == "Mac OS X" -> implementation("io.ktor:ktor-client-darwin:$ktorVersion")
-                    hostOs == "Linux"-> implementation("io.ktor:ktor-client-curl:$ktorVersion")
+                    hostOs == "Linux" -> implementation("io.ktor:ktor-client-curl:$ktorVersion")
                     isMingwX64 -> implementation("io.ktor:ktor-client-winhttp:$ktorVersion")
                     else -> throw GradleException("Host OS is not supported in Kotlin/Native.")
                 }
@@ -67,5 +65,57 @@ kotlin {
             }
         }
         val nativeTest by getting
+    }
+}
+
+group = "com.ioki"
+version = "0.0.1-SNAPSHOT"
+publishing {
+    publications {
+        publications.withType<MavenPublication> {
+            artifactId = when {
+                hostOs == "Mac OS X" && isArm64 -> artifactId.replace("native", "macosarm64")
+                hostOs == "Mac OS X" && !isArm64 -> artifactId.replace("native", "macosx64")
+                hostOs == "Linux" && !isArm64 -> artifactId.replace("native", "linuxx64")
+                isMingwX64 -> artifactId.replace("native", "mingwx64")
+                else -> throw GradleException("Host OS is not supported in Kotlin/Native.")
+            }.run { replace("kmp-", "") }
+            pom {
+                url.set("https://github.com/ioki-mobility/kmp-lokalise-api")
+                licenses {
+                    license {
+                        name.set("MIT License")
+                        url.set("https://github.com/ioki-mobility/kmp-lokalise-api/blob/main/LICENSE")
+                    }
+                }
+                organization {
+                    name.set("ioki")
+                    url.set("https://ioki.com")
+                }
+                developers {
+                    developer {
+                        name.set("Stefan 'StefMa' M.")
+                        email.set("StefMaDev@outlook.com")
+                        url.set("https://StefMa.guru")
+                        organization.set("ioki")
+                    }
+                }
+                scm {
+                    url.set("https://github.com/ioki-mobility/kmp-lokalise-api")
+                    connection.set("https://github.com/ioki-mobility/kmp-lokalise-api.git")
+                    developerConnection.set("git@github.com:ioki-mobility/kmp-lokalise-api.git")
+                }
+            }
+        }
+    }
+
+    repositories {
+        maven("https://maven.pkg.github.com/ioki-mobility/kmp-lokalise-api") {
+            name = "GitHubPackages"
+            credentials {
+                username = project.findProperty("githubPackagesUser") as? String
+                password = project.findProperty("githubPackagesKey") as? String
+            }
+        }
     }
 }
