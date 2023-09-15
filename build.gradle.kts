@@ -113,8 +113,8 @@ publishing {
         maven("https://maven.pkg.github.com/ioki-mobility/kmp-lokalise-api") {
             name = "GitHubPackages"
             credentials {
-                username = project.findProperty("githubPackages.user") as? String
-                password = project.findProperty("githubPackages.key") as? String
+                username = project.findProperty("githubPackagesUser") as? String
+                password = project.findProperty("githubPackagesKey") as? String
             }
         }
     }
