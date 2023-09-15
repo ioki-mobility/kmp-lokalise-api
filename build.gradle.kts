@@ -8,6 +8,9 @@ repositories {
     mavenCentral()
 }
 
+val hostOs = System.getProperty("os.name")
+val isArm64 = System.getProperty("os.arch") == "aarch64"
+val isMingwX64 = hostOs.startsWith("Windows")
 kotlin {
     jvm {
         jvmToolchain(8)
@@ -19,9 +22,6 @@ kotlin {
         }
     }
 
-    val hostOs = System.getProperty("os.name")
-    val isArm64 = System.getProperty("os.arch") == "aarch64"
-    val isMingwX64 = hostOs.startsWith("Windows")
     when {
         hostOs == "Mac OS X" && isArm64 -> macosArm64("native")
         hostOs == "Mac OS X" && !isArm64 -> macosX64("native")
@@ -57,7 +57,7 @@ kotlin {
             dependencies {
                 when {
                     hostOs == "Mac OS X" -> implementation("io.ktor:ktor-client-darwin:$ktorVersion")
-                    hostOs == "Linux"-> implementation("io.ktor:ktor-client-curl:$ktorVersion")
+                    hostOs == "Linux" -> implementation("io.ktor:ktor-client-curl:$ktorVersion")
                     isMingwX64 -> implementation("io.ktor:ktor-client-winhttp:$ktorVersion")
                     else -> throw GradleException("Host OS is not supported in Kotlin/Native.")
                 }
@@ -73,7 +73,13 @@ version = "0.0.1-SNAPSHOT"
 publishing {
     publications {
         publications.withType<MavenPublication> {
-            artifactId = artifactId.drop(4) // Get remove `kmp` from `kmo-lokalise-api[-jvm|-native]
+            artifactId = when {
+                hostOs == "Mac OS X" && isArm64 -> artifactId.replace("native", "macosarm64")
+                hostOs == "Mac OS X" && !isArm64 -> artifactId.replace("native", "macosx64")
+                hostOs == "Linux" && !isArm64 -> artifactId.replace("native", "linuxx64")
+                isMingwX64 -> artifactId.replace("native", "mingwx64")
+                else -> throw GradleException("Host OS is not supported in Kotlin/Native.")
+            }.run { replace("kmp-", "") }
             pom {
                 url.set("https://github.com/ioki-mobility/kmp-lokalise-api")
                 licenses {
