@@ -3,6 +3,7 @@ package com.ioki.lokalise.api
 import com.ioki.lokalise.api.stubs.allProjectsJson
 import com.ioki.lokalise.api.stubs.fileDownloadJson
 import com.ioki.lokalise.api.stubs.fileUploadJson
+import com.ioki.lokalise.api.stubs.retrieveProcessJson
 import io.ktor.client.engine.HttpClientEngine
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
@@ -183,6 +184,25 @@ class LokaliseClientTest {
             expected = """
                 {"convert_placeholders":true,"tags":["tag1","tag2"],"filter_task_id":42,"data":"data","filename":"path/to/file.xml","lang_iso":"en"}
                 """.trimIndent()
+        )
+    }
+
+    @Test
+    fun `test retrieve process`() = runLokaliseTest(retrieveProcessJson) { lokalise, mockEngine ->
+        lokalise.retrieveProcess(
+            projectId = "projectId",
+            processId = "processId",
+        )
+
+        val requestData = mockEngine.requestHistory.first()
+        assertHeaders(requestData.headers)
+        assertEquals(
+            actual = requestData.method,
+            expected = HttpMethod.Get
+        )
+        assertEquals(
+            actual = requestData.url.toString(),
+            expected = "https://api.lokalise.com/api2/projects/projectId/processes/processId"
         )
     }
 

@@ -2,8 +2,8 @@ package com.ioki.lokalise.api
 
 import com.ioki.lokalise.api.models.FileDownload
 import com.ioki.lokalise.api.models.FileUpload
-import com.ioki.lokalise.api.models.Project
 import com.ioki.lokalise.api.models.Projects
+import com.ioki.lokalise.api.models.RetrievedProcess
 import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
 import io.ktor.client.call.body
@@ -29,7 +29,7 @@ import kotlinx.serialization.json.JsonPrimitive
  * The Lokalise object represents the Lokalise API reference.
  * Check it out [here](https://developers.lokalise.com/reference/lokalise-rest-api)
  */
-interface Lokalise : LokaliseProjects, LokaliseFiles
+interface Lokalise : LokaliseProjects, LokaliseFiles, LokaliseQueuedProcesses
 
 interface LokaliseProjects {
 
@@ -65,6 +65,18 @@ interface LokaliseFiles {
         langIso: String,
         bodyParams: Map<String, Any> = emptyMap()
     ): FileUpload
+}
+
+interface LokaliseQueuedProcesses {
+
+    /**
+     * Retrieve a process.
+     * [Go to API docs](https://developers.lokalise.com/reference/download-files)
+     */
+    suspend fun retrieveProcess(
+        projectId: String,
+        processId: String,
+    ): RetrievedProcess
 }
 
 /**
@@ -144,6 +156,15 @@ private class LokaliseClient(
 
         return httpClient
             .post("projects/$projectId/files/upload") { setBody(requestBody) }
+            .body()
+    }
+
+    override suspend fun retrieveProcess(
+        projectId: String,
+        processId: String
+    ): RetrievedProcess {
+        return httpClient
+            .get("projects/$projectId/processes/$processId")
             .body()
     }
 }
