@@ -5,19 +5,19 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class FileUpload(
-    @SerialName("project_id") var projectId: String,
-    @SerialName("process") var process: Process
+    @SerialName("project_id") val projectId: String,
+    @SerialName("process") val process: Process
 ) {
     @Serializable
     data class Process(
-        @SerialName("process_id") var processId: String,
-        @SerialName("type") var type: String,
-        @SerialName("status") var status: String,
-        @SerialName("message") var message: String,
-        @SerialName("created_by") var createdBy: Int,
-        @SerialName("created_by_email") var createdByEmail: String,
-        @SerialName("created_at") var createdAt: String,
-        @SerialName("created_at_timestamp") var createdAtTimestamp: Int
+        @SerialName("process_id") val processId: String,
+        @SerialName("type") val type: String,
+        @SerialName("status") val status: String,
+        @SerialName("message") val message: String,
+        @SerialName("created_by") val createdBy: Int,
+        @SerialName("created_by_email") val createdByEmail: String,
+        @SerialName("created_at") val createdAt: String,
+        @SerialName("created_at_timestamp") val createdAtTimestamp: Int
     )
 }
 
