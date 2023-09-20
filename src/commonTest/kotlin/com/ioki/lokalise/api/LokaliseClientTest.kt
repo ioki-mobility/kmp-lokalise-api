@@ -1,6 +1,6 @@
 package com.ioki.lokalise.api
 
-import com.ioki.lokalise.api.stubs.allProjectsJson
+import com.ioki.lokalise.api.stubs.projectsJson
 import com.ioki.lokalise.api.stubs.fileDownloadJson
 import com.ioki.lokalise.api.stubs.fileUploadJson
 import com.ioki.lokalise.api.stubs.retrieveProcessJson
@@ -21,7 +21,7 @@ import kotlin.test.assertTrue
 class LokaliseClientTest {
 
     @Test
-    fun `test list all projects without params`() = runLokaliseTest(allProjectsJson) { lokalise, mockEngine ->
+    fun `test list all projects without params`() = runLokaliseTest(projectsJson) { lokalise, mockEngine ->
         lokalise.allProjects()
 
         val requestData = mockEngine.requestHistory.first()
@@ -38,7 +38,7 @@ class LokaliseClientTest {
     }
 
     @Test
-    fun `test list all projects with params`() = runLokaliseTest(allProjectsJson) { lokalise, mockEngine ->
+    fun `test list all projects with params`() = runLokaliseTest(projectsJson) { lokalise, mockEngine ->
         val params = mapOf(
             "limit" to 1,
             "filter_names" to "first,second",

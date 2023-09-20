@@ -10,72 +10,72 @@ data class Projects(
 
 @Serializable
 data class Project(
-    @SerialName("project_id") var projectId: String,
-    @SerialName("project_type") var projectType: String,
-    @SerialName("name") var name: String,
-    @SerialName("description") var description: String,
-    @SerialName("created_at") var createdAt: String,
-    @SerialName("created_at_timestamp") var createdAtTimestamp: Int,
-    @SerialName("created_by") var createdBy: Int,
-    @SerialName("created_by_email") var createdByEmail: String,
-    @SerialName("team_id") var teamId: Int,
-    @SerialName("base_language_id") var baseLanguageId: Int,
-    @SerialName("base_language_iso") var baseLanguageIso: String,
-    @SerialName("settings") var settings: Settings,
-    @SerialName("statistics") var statistics: Statistics
+    @SerialName("project_id") val projectId: String,
+    @SerialName("project_type") val projectType: String,
+    @SerialName("name") val name: String,
+    @SerialName("description") val description: String,
+    @SerialName("created_at") val createdAt: String,
+    @SerialName("created_at_timestamp") val createdAtTimestamp: Int,
+    @SerialName("created_by") val createdBy: Int,
+    @SerialName("created_by_email") val createdByEmail: String,
+    @SerialName("team_id") val teamId: Int,
+    @SerialName("base_language_id") val baseLanguageId: Int,
+    @SerialName("base_language_iso") val baseLanguageIso: String,
+    @SerialName("settings") val settings: Settings,
+    @SerialName("statistics") val statistics: Statistics
 ) {
     @Serializable
     data class Settings(
-        @SerialName("per_platform_key_names") var perPlatformKeyNames: Boolean,
-        @SerialName("reviewing") var reviewing: Boolean,
-        @SerialName("auto_toggle_unverified") var autoToggleUnverified: Boolean,
-        @SerialName("offline_translation") var offlineTranslation: Boolean,
-        @SerialName("key_editing") var keyEditing: Boolean,
-        @SerialName("inline_machine_translations") var inlineMachineTranslations: Boolean,
-        @SerialName("branching") var branching: Boolean,
-        @SerialName("segmentation") var segmentation: Boolean,
-        @SerialName("custom_translation_statuses") var customTranslationStatuses: Boolean,
-        @SerialName("custom_translation_statuses_allow_multiple") var customTranslationStatusesAllowMultiple: Boolean,
-        @SerialName("contributor_preview_download_enabled") var contributorPreviewDownloadEnabled: Boolean
+        @SerialName("per_platform_key_names") val perPlatformKeyNames: Boolean,
+        @SerialName("reviewing") val reviewing: Boolean,
+        @SerialName("auto_toggle_unverified") val autoToggleUnverified: Boolean,
+        @SerialName("offline_translation") val offlineTranslation: Boolean,
+        @SerialName("key_editing") val keyEditing: Boolean,
+        @SerialName("inline_machine_translations") val inlineMachineTranslations: Boolean,
+        @SerialName("branching") val branching: Boolean,
+        @SerialName("segmentation") val segmentation: Boolean,
+        @SerialName("custom_translation_statuses") val customTranslationStatuses: Boolean,
+        @SerialName("custom_translation_statuses_allow_multiple") val customTranslationStatusesAllowMultiple: Boolean,
+        @SerialName("contributor_preview_download_enabled") val contributorPreviewDownloadEnabled: Boolean
     )
 
     @Serializable
     data class Statistics(
-        @SerialName("progress_total") var progressTotal: Int,
-        @SerialName("keys_total") var keysTotal: Int,
-        @SerialName("team") var team: Int,
-        @SerialName("base_words") var baseWords: Int,
-        @SerialName("qa_issues_total") var qaIssuesTotal: Int,
-        @SerialName("qa_issues") var qaIssues: QaIssues,
-        @SerialName("languages") var languages: List<Languages>
+        @SerialName("progress_total") val progressTotal: Int,
+        @SerialName("keys_total") val keysTotal: Int,
+        @SerialName("team") val team: Int,
+        @SerialName("base_words") val baseWords: Int,
+        @SerialName("qa_issues_total") val qaIssuesTotal: Int,
+        @SerialName("qa_issues") val qaIssues: QaIssues,
+        @SerialName("languages") val languages: List<Languages>
     ) {
         @Serializable
         data class QaIssues(
-            @SerialName("not_reviewed") var notReviewed: Int,
-            @SerialName("unverified") var unverified: Int,
-            @SerialName("spelling_grammar") var spellingGrammar: Int,
-            @SerialName("inconsistent_placeholders") var inconsistentPlaceholders: Int,
-            @SerialName("inconsistent_html") var inconsistentHtml: Int,
-            @SerialName("different_number_of_urls") var differentNumberOfUrls: Int,
-            @SerialName("different_urls") var differentUrls: Int,
-            @SerialName("leading_whitespace") var leadingWhitespace: Int,
-            @SerialName("trailing_whitespace") var trailingWhitespace: Int,
-            @SerialName("different_number_of_email_address") var differentNumberOfEmailAddress: Int,
-            @SerialName("different_email_address") var differentEmailAddress: Int,
-            @SerialName("different_brackets") var differentBrackets: Int,
-            @SerialName("different_numbers") var differentNumbers: Int,
-            @SerialName("double_space") var doubleSpace: Int,
-            @SerialName("special_placeholder") var specialPlaceholder: Int,
-            @SerialName("unbalanced_brackets") var unbalancedBrackets: Int
+            @SerialName("not_reviewed") val notReviewed: Int,
+            @SerialName("unverified") val unverified: Int,
+            @SerialName("spelling_grammar") val spellingGrammar: Int,
+            @SerialName("inconsistent_placeholders") val inconsistentPlaceholders: Int,
+            @SerialName("inconsistent_html") val inconsistentHtml: Int,
+            @SerialName("different_number_of_urls") val differentNumberOfUrls: Int,
+            @SerialName("different_urls") val differentUrls: Int,
+            @SerialName("leading_whitespace") val leadingWhitespace: Int,
+            @SerialName("trailing_whitespace") val trailingWhitespace: Int,
+            @SerialName("different_number_of_email_address") val differentNumberOfEmailAddress: Int,
+            @SerialName("different_email_address") val differentEmailAddress: Int,
+            @SerialName("different_brackets") val differentBrackets: Int,
+            @SerialName("different_numbers") val differentNumbers: Int,
+            @SerialName("double_space") val doubleSpace: Int,
+            @SerialName("special_placeholder") val specialPlaceholder: Int,
+            @SerialName("unbalanced_brackets") val unbalancedBrackets: Int
 
         )
 
         @Serializable
         data class Languages(
-            @SerialName("language_id") var languageId: Int,
-            @SerialName("language_iso") var languageIso: String,
-            @SerialName("progress") var progress: Int,
-            @SerialName("words_to_do") var wordsToDo: Int
+            @SerialName("language_id") val languageId: Int,
+            @SerialName("language_iso") val languageIso: String,
+            @SerialName("progress") val progress: Int,
+            @SerialName("words_to_do") val wordsToDo: Int
         )
     }
 }
