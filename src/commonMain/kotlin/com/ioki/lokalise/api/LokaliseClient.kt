@@ -85,6 +85,14 @@ interface LokaliseQueuedProcesses {
 fun Lokalise(
     token: String,
     fullLoggingEnabled: Boolean = false,
+): Lokalise = Lokalise(token, fullLoggingEnabled, null)
+
+/**
+ * Creates a new [Lokalise] object.
+ */
+internal fun Lokalise(
+    token: String,
+    fullLoggingEnabled: Boolean = false,
     httpClientEngine: HttpClientEngine? = null
 ): Lokalise {
 
