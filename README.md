@@ -43,3 +43,25 @@ dependencies {
     implementation("com.ioki:lokalise-api:<latest-version>")
 }
 ```
+
+## Release
+
+### Continuous release
+
+By default, each merge to `main` will create a new `SNAPSHOT` release.
+If you want to use the latest and greatest use the `SNAPSHOT` version of the library.
+But please be aware that they might contain bugs or behaviour changes.
+
+### Proper release
+
+* Checkout `main`
+* Pull latest changes
+* Adjust version in [`build.gradle.kts`](build.gradle.kts) to a non-SNAPSHOT version
+* Commit
+* Create a git tag (e.g. `1.0.0`)
+* Push to `main` and push the `tag`
+* Increase the `version` to the next **minor** version in the `build.gradle.kts` file
+* Commit & Push
+
+> **Note**: The `tag` push will create a new release with the [`Publish` workflow](https://github.com/ioki-mobility/kmp-lokalise-api/actions/workflows/publish.yml).
+
