@@ -83,7 +83,7 @@ publishing {
                 url.set("https://github.com/ioki-mobility/kmp-lokalise-api")
                 licenses {
                     license {
-                        name.set("MIT License")
+                        name.set("MIT")
                         url.set("https://github.com/ioki-mobility/kmp-lokalise-api/blob/main/LICENSE")
                     }
                 }
