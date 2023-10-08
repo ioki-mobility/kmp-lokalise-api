@@ -1,6 +1,6 @@
 plugins {
-    kotlin("multiplatform") version "1.9.10"
-    kotlin("plugin.serialization") version "1.9.10"
+    alias(libs.plugins.kotlinMultiplatform)
+    alias(libs.plugins.kotlinSerialization)
     `maven-publish`
 }
 
@@ -31,34 +31,33 @@ kotlin {
     }
 
     sourceSets {
-        val ktorVersion = "2.3.4"
         val commonMain by getting {
             dependencies {
-                implementation("io.ktor:ktor-client-core:$ktorVersion")
-                implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
-                implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
-                implementation("io.ktor:ktor-client-logging:$ktorVersion")
+                implementation(libs.common.ktor.core)
+                implementation(libs.common.ktor.contentNegotiation)
+                implementation(libs.common.ktor.serialization)
+                implementation(libs.common.ktor.logging)
             }
         }
         val commonTest by getting {
             dependencies {
-                implementation(kotlin("test"))
-                implementation("io.ktor:ktor-client-mock:$ktorVersion")
+                implementation(libs.common.test.kotlin)
+                implementation(libs.common.test.ktorMock)
             }
         }
         val jvmMain by getting {
             dependencies {
-                implementation("ch.qos.logback:logback-classic:1.3.0")
-                implementation("io.ktor:ktor-client-okhttp:$ktorVersion")
+                implementation(libs.jvm.ktor.client)
+                implementation(libs.jvm.ktor.logging)
             }
         }
         val jvmTest by getting
         val nativeMain by getting {
             dependencies {
                 when {
-                    hostOs == "Mac OS X" -> implementation("io.ktor:ktor-client-darwin:$ktorVersion")
-                    hostOs == "Linux" -> implementation("io.ktor:ktor-client-curl:$ktorVersion")
-                    isMingwX64 -> implementation("io.ktor:ktor-client-winhttp:$ktorVersion")
+                    hostOs == "Mac OS X" -> implementation(libs.macos.ktor.client)
+                    hostOs == "Linux" -> implementation(libs.linux.ktor.client)
+                    isMingwX64 -> implementation(libs.mingw.ktor.client)
                     else -> throw GradleException("Host OS is not supported in Kotlin/Native.")
                 }
 
