@@ -7,8 +7,6 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
-    registries:
-      - maven-google
 
   - package-ecosystem: "github-actions"
     directory: "/"
