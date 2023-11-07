@@ -29,7 +29,7 @@ data class RetrievedProcess(
                 @SerialName("status") val status: String,
                 @SerialName("message") val message: String,
                 @SerialName("name_original") val nameOriginal: String,
-                @SerialName("name_custom") val nameCustom: String,
+                @SerialName("name_custom") val nameCustom: String?,
                 @SerialName("word_count_total") val wordCountTotal: Int,
                 @SerialName("key_count_total") val keyCountTotal: Int,
                 @SerialName("key_count_inserted") val keyCountInserted: Int,
