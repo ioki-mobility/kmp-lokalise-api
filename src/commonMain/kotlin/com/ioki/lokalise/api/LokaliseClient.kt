@@ -71,7 +71,7 @@ interface LokaliseQueuedProcesses {
 
     /**
      * Retrieve a process.
-     * [Go to API docs](https://developers.lokalise.com/reference/download-files)
+     * [Go to API docs](https://developers.lokalise.com/reference/retrieve-a-process)
      */
     suspend fun retrieveProcess(
         projectId: String,
