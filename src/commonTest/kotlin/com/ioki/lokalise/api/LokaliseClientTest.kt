@@ -1,8 +1,9 @@
 package com.ioki.lokalise.api
 
-import com.ioki.lokalise.api.stubs.projectsJson
+import com.ioki.lokalise.api.stubs.errorJson
 import com.ioki.lokalise.api.stubs.fileDownloadJson
 import com.ioki.lokalise.api.stubs.fileUploadJson
+import com.ioki.lokalise.api.stubs.projectsJson
 import com.ioki.lokalise.api.stubs.retrieveProcessJson
 import io.ktor.client.engine.HttpClientEngine
 import io.ktor.client.engine.mock.MockEngine
@@ -11,6 +12,7 @@ import io.ktor.client.engine.mock.toByteArray
 import io.ktor.http.ContentType
 import io.ktor.http.Headers
 import io.ktor.http.HttpMethod
+import io.ktor.http.HttpStatusCode
 import io.ktor.http.headersOf
 import io.ktor.utils.io.core.String
 import kotlinx.coroutines.runBlocking
@@ -19,6 +21,41 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class LokaliseClientTest {
+
+    @Test
+    fun `test result value with error on allProjects but doesn't matter where`() = runLokaliseTest(
+        errorJson,
+        HttpStatusCode.NotFound
+    ) { lokalise, mockEngine ->
+        val result = lokalise.allProjects()
+
+        assertTrue(result is Result.Failure)
+        assertTrue(result.error.code == 404)
+        assertTrue(result.error.message == "Not Found")
+    }
+
+    @Test
+    fun `test result value without error on allProjects but doesn't matter where`() =
+        runLokaliseTest(projectsJson) { lokalise, mockEngine ->
+            val result = lokalise.allProjects()
+
+            assertTrue(result is Result.Success)
+            assertTrue(result.data.projects.size == 1)
+            with(result.data.projects.first()) {
+                assertEquals(
+                    expected = projectId,
+                    actual = "string"
+                )
+                assertEquals(
+                    expected = createdAtTimestamp,
+                    actual = 0
+                )
+                assertEquals(
+                    expected = settings.branching,
+                    actual = true
+                )
+            }
+        }
 
     @Test
     fun `test list all projects without params`() = runLokaliseTest(projectsJson) { lokalise, mockEngine ->
@@ -211,28 +248,33 @@ class LokaliseClientTest {
             headers.contains("X-Api-Token", "sec3tT0k3n")
     }
 
-    private fun createLokalise(
-        httpClientEngine: HttpClientEngine,
-        token: String = "sec3tT0k3n",
-    ): Lokalise = Lokalise(
-        token = token,
-        fullLoggingEnabled = true,
-        httpClientEngine = httpClientEngine
-    )
-
-    private fun createMockEngine(content: String): MockEngine = MockEngine { _ ->
-        respond(
-            content = content,
-            headers = headersOf("Content-Type", ContentType.Application.Json.toString())
-        )
-    }
-
     private fun runLokaliseTest(
         httpJsonResponse: String,
+        httpStatusCode: HttpStatusCode = HttpStatusCode.OK,
         block: suspend (Lokalise, MockEngine) -> Unit
     ) = runBlocking {
-        val engine = createMockEngine(httpJsonResponse)
+        val engine = createMockEngine(httpJsonResponse, httpStatusCode)
         val lokalise = createLokalise(engine)
         block(lokalise, engine)
     }
 }
+
+private fun createMockEngine(
+    content: String,
+    statusCode: HttpStatusCode
+): MockEngine = MockEngine { _ ->
+    respond(
+        content = content,
+        headers = headersOf("Content-Type", ContentType.Application.Json.toString()),
+        status = statusCode
+    )
+}
+
+private fun createLokalise(
+    httpClientEngine: HttpClientEngine,
+    token: String = "sec3tT0k3n",
+): Lokalise = Lokalise(
+    token = token,
+    fullLoggingEnabled = true,
+    httpClientEngine = httpClientEngine
+)
