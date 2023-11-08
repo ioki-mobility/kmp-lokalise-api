@@ -68,7 +68,7 @@ kotlin {
 }
 
 group = "com.ioki"
-version = "0.0.1"
+version = "0.0.2-SNAPSHOT"
 publishing {
     publications {
         publications.withType<MavenPublication> {
