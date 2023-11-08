@@ -57,11 +57,13 @@ But please be aware that they might contain bugs or behaviour changes.
 * Checkout `main`
 * Pull latest changes
 * Adjust version in [`build.gradle.kts`](build.gradle.kts) to a non-SNAPSHOT version
-* Commit
+* Commit `Prepare next release`
 * Create a git tag (e.g. `1.0.0`)
-* Push to `main` and push the `tag`
-* Increase the `version` to the next **minor** version in the `build.gradle.kts` file
-* Commit & Push
+* Push the `tag`
+* Increase the `version` to the next **minor** version +`-SNAPSHOT` (e.g. `0.0.2-SNAPSHOT`) in the [`build.gradle.kts`](build.gradle.kts) file
+* Commit `Prepare for next version`
+* Push to `main`
+* Create a [GitHub release](https://github.com/ioki-mobility/kmp-lokalise-api/releases)
 
 > **Note**: The `tag` push will create a new release with the [`Publish` workflow](https://github.com/ioki-mobility/kmp-lokalise-api/actions/workflows/publish.yml).
 
