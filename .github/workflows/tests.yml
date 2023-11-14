@@ -33,7 +33,7 @@ jobs:
         run: sudo apt-get install -y libcurl4-gnutls-dev
 
       - name: Run tests
-        run: ./gradlew nativeTest
+        run: ./gradlew linuxX64Test
 
       - name: Test Report
         uses: mikepenz/action-junit-report@v4
@@ -49,7 +49,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Run tests
-        run: ./gradlew nativeTest
+        run: ./gradlew macosX64Test
 
       - name: Test Report
         uses: mikepenz/action-junit-report@v4
@@ -65,7 +65,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Run tests
-        run: ./gradlew.bat nativeTest
+        run: ./gradlew.bat mingwX64Test
 
       - name: Test Report
         uses: mikepenz/action-junit-report@v4
