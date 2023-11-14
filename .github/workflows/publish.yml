@@ -33,7 +33,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Publish linux
-        run: ./gradlew publishNativePublicationToGitHubPackagesRepository -PgithubPackagesUser=$GITHUB_ACTOR -PgithubPackagesKey=${{ secrets.GITHUB_TOKEN }}
+        run: ./gradlew publishLinuxX64PublicationToGitHubPackagesRepository -PgithubPackagesUser=$GITHUB_ACTOR -PgithubPackagesKey=${{ secrets.GITHUB_TOKEN }}
 
   publish-darwin:
     runs-on: macos-latest
@@ -42,7 +42,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Publish darwin
-        run: ./gradlew publishNativePublicationToGitHubPackagesRepository -PgithubPackagesUser=$GITHUB_ACTOR -PgithubPackagesKey=${{ secrets.GITHUB_TOKEN }}
+        run: ./gradlew publishMacosX64PublicationToGitHubPackagesRepository -PgithubPackagesUser=$GITHUB_ACTOR -PgithubPackagesKey=${{ secrets.GITHUB_TOKEN }}
 
   publish-mingw:
     runs-on: windows-latest
@@ -51,4 +51,4 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Publish mingw
-        run: ./gradlew.bat publishNativePublicationToGitHubPackagesRepository -PgithubPackagesUser=$GITHUB_ACTOR -PgithubPackagesKey=${{ secrets.GITHUB_TOKEN }}
+        run: ./gradlew.bat publishMingwX64PublicationToGitHubPackagesRepository -PgithubPackagesUser=$GITHUB_ACTOR -PgithubPackagesKey=${{ secrets.GITHUB_TOKEN }}
