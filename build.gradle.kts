@@ -19,16 +19,10 @@ kotlin {
         }
     }
 
-    val hostOs = System.getProperty("os.name")
-    val isArm64 = System.getProperty("os.arch") == "aarch64"
-    val isMingwX64 = hostOs.startsWith("Windows")
-    when {
-        hostOs == "Mac OS X" && isArm64 -> macosArm64()
-        hostOs == "Mac OS X" && !isArm64 -> macosX64()
-        hostOs == "Linux" && !isArm64 -> linuxX64()
-        isMingwX64 -> mingwX64()
-        else -> throw GradleException("Host OS is not supported in Kotlin/Native.")
-    }
+    macosArm64()
+    macosX64()
+    linuxX64()
+    mingwX64()
 
     sourceSets {
         commonMain.dependencies {
@@ -45,13 +39,14 @@ kotlin {
             implementation(libs.jvm.ktor.client)
             implementation(libs.jvm.ktor.logging)
         }
-        nativeMain.dependencies {
-            when {
-                hostOs == "Mac OS X" -> implementation(libs.macos.ktor.client)
-                hostOs == "Linux" -> implementation(libs.linux.ktor.client)
-                isMingwX64 -> implementation(libs.mingw.ktor.client)
-                else -> throw GradleException("Host OS is not supported in Kotlin/Native.")
-            }
+        macosMain.dependencies {
+            implementation(libs.macos.ktor.client)
+        }
+        linuxMain.dependencies {
+            implementation(libs.linux.ktor.client)
+        }
+        mingwMain.dependencies {
+            implementation(libs.mingw.ktor.client)
         }
     }
 }
