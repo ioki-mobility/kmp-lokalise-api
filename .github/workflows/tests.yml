@@ -13,6 +13,15 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Cache Gradle
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/jdks
+            ~/.gradle/wrapper
+          key: gradle-caches-jvm-v0-${{ hashFiles('build.gradle.kts', 'settings.gradle.kts', 'gradle/wrapper/gradle-wrapper.properties', 'libs.versions.toml') }}
+
       - name: Run tests
         run: ./gradlew jvmTest
 
@@ -32,6 +41,16 @@ jobs:
       - name: Install libcurl
         run: sudo apt-get install -y libcurl4-gnutls-dev
 
+      - name: Cache Gradle
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/jdks
+            ~/.gradle/wrapper
+            ~/.konan
+          key: gradle-caches-linux-v0-${{ hashFiles('build.gradle.kts', 'settings.gradle.kts', 'gradle/wrapper/gradle-wrapper.properties', 'libs.versions.toml') }}
+
       - name: Run tests
         run: ./gradlew linuxX64Test
 
@@ -48,6 +67,16 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Cache Gradle
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/jdks
+            ~/.gradle/wrapper
+            ~/.konan
+          key: gradle-caches-darwin-v0-${{ hashFiles('build.gradle.kts', 'settings.gradle.kts', 'gradle/wrapper/gradle-wrapper.properties', 'libs.versions.toml') }}
+
       - name: Run tests
         run: ./gradlew macosX64Test
 
@@ -63,6 +92,16 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Cache Gradle
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/jdks
+            ~/.gradle/wrapper
+            ~/.konan
+          key: gradle-caches-mingw-v0-${{ hashFiles('build.gradle.kts', 'settings.gradle.kts', 'gradle/wrapper/gradle-wrapper.properties', 'libs.versions.toml') }}
 
       - name: Run tests
         run: ./gradlew.bat mingwX64Test
