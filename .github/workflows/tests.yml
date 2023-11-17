@@ -59,7 +59,7 @@ jobs:
         if: success() || failure()
         with:
           check_name: 'Linux Test Reports'
-          report_paths: '**/build/test-results/nativeTest/TEST-*.xml'
+          report_paths: '**/build/test-results/linuxX64Test/TEST-*.xml'
 
   test-darwin:
     runs-on: macos-latest
@@ -85,7 +85,7 @@ jobs:
         if: success() || failure()
         with:
           check_name: 'Darwin Test Reports'
-          report_paths: '**/build/test-results/nativeTest/TEST-*.xml'
+          report_paths: '**/build/test-results/macosX64Test/TEST-*.xml'
 
   test-mingw:
     runs-on: windows-latest
@@ -111,4 +111,4 @@ jobs:
         if: success() || failure()
         with:
           check_name: 'Mingw Test Reports'
-          report_paths: '**/build/test-results/nativeTest/TEST-*.xml'
+          report_paths: '**/build/test-results/mingwX64Test/TEST-*.xml'
