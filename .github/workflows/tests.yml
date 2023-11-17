@@ -104,7 +104,7 @@ jobs:
           key: gradle-caches-mingw-v0-${{ hashFiles('build.gradle.kts', 'settings.gradle.kts', 'gradle/wrapper/gradle-wrapper.properties', 'libs.versions.toml') }}
 
       - name: Run tests
-        run: ./gradlew.bat mingwX64Test
+        run: ./gradlew.bat mingwX64Test --no-daemon
 
       - name: Test Report
         uses: mikepenz/action-junit-report@v4
