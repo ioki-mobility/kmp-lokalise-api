@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.kotlinSerialization)
+    alias(libs.plugins.kotlinDokka)
     `maven-publish`
 }
 
@@ -51,11 +52,18 @@ kotlin {
     }
 }
 
+val dokkaJar = tasks.register<Jar>("dokkaJar") {
+    dependsOn(tasks.dokkaHtml)
+    from(tasks.dokkaHtml.flatMap { it.outputDirectory })
+    archiveClassifier.set("javadoc")
+}
+
 group = "com.ioki"
 version = "0.0.2-SNAPSHOT"
 publishing {
     publications {
         publications.withType<MavenPublication> {
+            artifact(dokkaJar)
             artifactId = artifactId.replace("kmp-", "")
             pom {
                 url.set("https://github.com/ioki-mobility/kmp-lokalise-api")
