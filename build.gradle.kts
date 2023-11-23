@@ -65,12 +65,16 @@ publishing {
         publications.withType<MavenPublication> {
             artifact(dokkaJar)
             artifactId = artifactId.replace("kmp-", "")
+
             pom {
+                name.set("KMP Lokalise Api")
+                description.set("Lokalise API v2 Kotlin Multiplatform client library")
                 url.set("https://github.com/ioki-mobility/kmp-lokalise-api")
+
                 licenses {
                     license {
                         name.set("MIT")
-                        url.set("https://github.com/ioki-mobility/kmp-lokalise-api/blob/main/LICENSE")
+                        url.set("https://opensource.org/licenses/MIT")
                     }
                 }
                 organization {
@@ -83,12 +87,13 @@ publishing {
                         email.set("StefMaDev@outlook.com")
                         url.set("https://StefMa.guru")
                         organization.set("ioki")
+                        organizationUrl.set("https://ioki.com")
                     }
                 }
                 scm {
                     url.set("https://github.com/ioki-mobility/kmp-lokalise-api")
-                    connection.set("https://github.com/ioki-mobility/kmp-lokalise-api.git")
-                    developerConnection.set("git@github.com:ioki-mobility/kmp-lokalise-api.git")
+                    connection.set("scm:git:git://github.com/ioki-mobility/kmp-lokalise-api.git")
+                    developerConnection.set("scm:git:ssh://git@github.com/ioki-mobility/kmp-lokalise-api.git")
                 }
             }
         }
