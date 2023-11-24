@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlinSerialization)
     alias(libs.plugins.kotlinDokka)
     `maven-publish`
+    signing
 }
 
 repositories {
@@ -122,4 +123,20 @@ publishing {
             }
         }
     }
+}
+
+signing {
+    val signingKey = System.getenv("GPG_SIGNING_KEY")
+    val signingPassword = System.getenv("GPG_SIGNING_PASSWORD")
+    useInMemoryPgpKeys(signingKey, signingPassword)
+    sign(publishing.publications)
+}
+
+// Workaround taken from here:
+// https://github.com/gradle/gradle/issues/26091#issuecomment-1722947958
+// Maybe fix can be found here:
+// https://github.com/gradle/gradle/pull/26292
+tasks.withType<AbstractPublishToMaven>().configureEach {
+    val signingTasks = tasks.withType<Sign>()
+    mustRunAfter(signingTasks)
 }
