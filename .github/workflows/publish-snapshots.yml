@@ -1,16 +1,12 @@
-name: 'Publish Maven Central Staging'
+name: 'Publish Snapshots'
 
 on:
   push:
-    tags:
-      - '*'
-
-env:
-  GPG_SIGNING_KEY: ${{ secrets.GPG_SIGNING_KEY }}
-  GPG_SIGNING_PASSWORD: ${{ secrets.GPG_SIGNING_PASSWORD }}
+    branches:
+      - 'main'
 
 jobs:
-  publish-kmp-metadata:
+  publish-snapshots:
     runs-on: macos-latest
     steps:
       - name: Checkout
@@ -19,8 +15,8 @@ jobs:
       - name: Publish to GitHub Packages
         run: ./gradlew publishAllPublicationsToGitHubPackagesRepository -PgithubPackagesUser=$GITHUB_ACTOR -PgithubPackagesKey=${{ secrets.GITHUB_TOKEN }}
 
-      - name: Publish to Sonatype Staging
-        run: ./gradlew publishAllPublicationsToSonatypeStagingRepository
+      - name: Publish to Sonatype Snapshot
+        run: ./gradlew publishAllPublicationsToSonatypeSnapshotRepository
         env:
           SONATYPE_USER: ${{ secrets.SONATYPE_USER }}
           SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
