@@ -60,7 +60,7 @@ val dokkaJar = tasks.register<Jar>("dokkaJar") {
 }
 
 group = "com.ioki"
-version = "0.0.2-SNAPSHOT"
+version = "0.0.2"
 publishing {
     publications {
         publications.withType<MavenPublication> {
