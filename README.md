@@ -1,6 +1,8 @@
 # Lokalise API v2 unofficial KMP client library
 
 [![Tests](https://github.com/ioki-mobility/kmp-lokalise-api/actions/workflows/tests.yml/badge.svg)](https://github.com/ioki-mobility/kmp-lokalise-api/actions/workflows/tests.yml)
+[![Maven Central](https://img.shields.io/maven-central/v/com.ioki/lokalise-api?labelColor=%2324292E&color=%233246c8)](https://central.sonatype.com/artifact/com.ioki/lokalise-api)
+[![MIT](https://img.shields.io/badge/license-MIT-blue.svg?labelColor=%2324292E&color=%23d11064)](https://github.com/ioki-mobility/kmp-lokalise-api/blob/master/LICENSE.md)
 
 Inofficial Kotlin Multiplatform implementation of the [Lokalise API](https://developers.lokalise.com/reference/lokalise-rest-api)
 targeting `JVM`, `macOS/X64`, `macOS/Arm64`, `Mingw(Windows)/X64` and `Linux/X64`.
@@ -28,11 +30,11 @@ the HTTP communication.
 
 ### Add the repository
 
-The project is hosted on [GitHub Packages](https://github.com/orgs/ioki-mobility/packages?repo_name=kmp-lokalise-api).
+The project is hosted on Maven Central.
 
 ```kotlin
 repositories {
-    maven(url = "https://ghpkgs.cloud/ioki-mobility/kmp-lokalise-api")
+    mavenCentral()
 }
 ```
 
@@ -51,6 +53,18 @@ dependencies {
 By default, each merge to `main` will create a new `SNAPSHOT` release.
 If you want to use the latest and greatest use the `SNAPSHOT` version of the library.
 But please be aware that they might contain bugs or behaviour changes.
+
+To use the SNAPSHOT version you have to include the sonatype snapshot repository:
+
+```kotlin
+repositories {
+    maven(url = "https://s01.oss.sonatype.org/content/repositories/snapshots/")
+}
+
+dependencies {
+    implementation("com.ioki:lokalise-api:<latest-snapshot-version>-SNAPSHOT")
+}
+```
 
 ### Proper release
 
