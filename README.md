@@ -2,6 +2,8 @@
 
 [![Tests](https://github.com/ioki-mobility/kmp-lokalise-api/actions/workflows/tests.yml/badge.svg)](https://github.com/ioki-mobility/kmp-lokalise-api/actions/workflows/tests.yml)
 [![Maven Central](https://img.shields.io/maven-central/v/com.ioki/lokalise-api?labelColor=%2324292E&color=%233246c8)](https://central.sonatype.com/artifact/com.ioki/lokalise-api)
+[![Snapshot](https://img.shields.io/nexus/s/com.ioki/lokalise-api?labelColor=%2324292E&color=%234f78ff&server=https://s01.oss.sonatype.org)](https://s01.oss.sonatype.org/content/repositories/snapshots/com/ioki/)
+[![javadoc](https://javadoc.io/badge2/com.ioki/lokalise-api/javadoc.svg?labelColor=%2324292E&color=%236eaaff)](https://javadoc.io/doc/com.ioki/lokalise-api) 
 [![MIT](https://img.shields.io/badge/license-MIT-blue.svg?labelColor=%2324292E&color=%23d11064)](https://github.com/ioki-mobility/kmp-lokalise-api/blob/master/LICENSE.md)
 
 Inofficial Kotlin Multiplatform implementation of the [Lokalise API](https://developers.lokalise.com/reference/lokalise-rest-api)
