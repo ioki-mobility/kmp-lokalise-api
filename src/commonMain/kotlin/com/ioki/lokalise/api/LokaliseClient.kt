@@ -21,6 +21,7 @@ import io.ktor.client.statement.HttpResponse
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
+import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonNull
@@ -99,7 +100,7 @@ internal fun Lokalise(
 ): Lokalise {
     val clientConfig: HttpClientConfig<*>.() -> Unit = {
         install(ContentNegotiation) {
-            json()
+            json(Json{ ignoreUnknownKeys = true })
         }
         install(Logging) {
             level = if (fullLoggingEnabled) LogLevel.ALL else LogLevel.HEADERS

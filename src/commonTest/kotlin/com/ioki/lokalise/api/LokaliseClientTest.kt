@@ -2,6 +2,7 @@ package com.ioki.lokalise.api
 
 import com.ioki.lokalise.api.stubs.errorJson
 import com.ioki.lokalise.api.stubs.fileDownloadJson
+import com.ioki.lokalise.api.stubs.fileDownloadWithUnknownFieldJson
 import com.ioki.lokalise.api.stubs.fileUploadJson
 import com.ioki.lokalise.api.stubs.projectsJson
 import com.ioki.lokalise.api.stubs.retrieveProcessJson
@@ -241,6 +242,17 @@ class LokaliseClientTest {
             actual = requestData.url.toString(),
             expected = "https://api.lokalise.com/api2/projects/projectId/processes/processId"
         )
+    }
+
+    @Test
+    fun `test ignore unknown fields`() = runLokaliseTest(fileDownloadWithUnknownFieldJson) { lokalise, mockEngine ->
+        lokalise.downloadFiles(
+            projectId = "projectId",
+            format = "someFormat"
+        )
+
+        val requestData = mockEngine.requestHistory.first()
+        assertHeaders(requestData.headers)
     }
 
     private fun assertHeaders(headers: Headers) = assertTrue {
