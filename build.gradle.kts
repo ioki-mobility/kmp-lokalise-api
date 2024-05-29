@@ -11,7 +11,7 @@ repositories {
 }
 
 kotlin {
-    jvmToolchain(8)
+    jvmToolchain(11)
     jvm {
         withJava()
         testRuns.named("test") {
