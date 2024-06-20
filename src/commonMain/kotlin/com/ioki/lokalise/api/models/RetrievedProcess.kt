@@ -35,6 +35,7 @@ data class RetrievedProcess(
                 @SerialName("key_count_inserted") val keyCountInserted: Int,
                 @SerialName("key_count_updated") val keyCountUpdated: Int,
                 @SerialName("key_count_skipped") val keyCountSkipped: Int,
+                @SerialName("key_count_deleted") val keyCountDeleted: Int,
             )
         }
     }
