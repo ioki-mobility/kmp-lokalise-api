@@ -12,7 +12,7 @@ common-test-kotlin = { module = "org.jetbrains.kotlin:kotlin-test", version.ref 
 common-test-ktorMock = { module = "io.ktor:ktor-client-mock", version.ref = "ktor" }
 
 jvm-ktor-client = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }
-jvm-ktor-logging = "ch.qos.logback:logback-classic:1.5.7"
+jvm-ktor-logging = "ch.qos.logback:logback-classic:1.5.10"
 
 macos-ktor-client = { module = "io.ktor:ktor-client-darwin", version.ref = "ktor" }
 
