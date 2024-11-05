@@ -67,7 +67,7 @@ jobs:
           report_paths: '**/build/test-results/linuxX64Test/TEST-*.xml'
 
   test-darwin:
-    runs-on: macos-13 // macos-13 is x64
+    runs-on: macos-13 # macos-13 is x64
     steps:
       - name: Checkout
         uses: actions/checkout@v4
