@@ -23,7 +23,8 @@ val retrieveProcessJson = """
           "key_count_total": 1,
           "key_count_inserted": 0,
           "key_count_updated": 0,
-          "key_count_skipped": 1
+          "key_count_skipped": 1,
+          "key_count_deleted": 1
         }
       ]
     }
