@@ -32,6 +32,7 @@ kotlin {
             implementation(libs.common.ktor.contentNegotiation)
             implementation(libs.common.ktor.serialization)
             implementation(libs.common.ktor.logging)
+            api(libs.common.result)
         }
         commonTest.dependencies {
             implementation(libs.common.test.kotlin)
