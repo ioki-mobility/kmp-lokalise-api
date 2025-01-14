@@ -1,10 +1,12 @@
 package com.ioki.lokalise.api
 
+import com.ioki.lokalise.api.models.Error
 import com.ioki.lokalise.api.models.ErrorWrapper
 import com.ioki.lokalise.api.models.FileDownload
 import com.ioki.lokalise.api.models.FileUpload
 import com.ioki.lokalise.api.models.Projects
 import com.ioki.lokalise.api.models.RetrievedProcess
+import com.ioki.result.Result
 import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
 import io.ktor.client.call.body
@@ -42,7 +44,7 @@ interface LokaliseProjects {
      */
     suspend fun allProjects(
         queryParams: Map<String, Any> = emptyMap()
-    ): Result<Projects>
+    ): Result<Projects, Error>
 }
 
 interface LokaliseFiles {
@@ -55,7 +57,7 @@ interface LokaliseFiles {
         projectId: String,
         format: String,
         bodyParams: Map<String, Any> = emptyMap()
-    ): Result<FileDownload>
+    ): Result<FileDownload, Error>
 
     /**
      * Upload files.
@@ -67,7 +69,7 @@ interface LokaliseFiles {
         filename: String,
         langIso: String,
         bodyParams: Map<String, Any> = emptyMap()
-    ): Result<FileUpload>
+    ): Result<FileUpload, Error>
 }
 
 interface LokaliseQueuedProcesses {
@@ -79,7 +81,7 @@ interface LokaliseQueuedProcesses {
     suspend fun retrieveProcess(
         projectId: String,
         processId: String,
-    ): Result<RetrievedProcess>
+    ): Result<RetrievedProcess, Error>
 }
 
 /**
@@ -100,7 +102,7 @@ internal fun Lokalise(
 ): Lokalise {
     val clientConfig: HttpClientConfig<*>.() -> Unit = {
         install(ContentNegotiation) {
-            json(Json{ ignoreUnknownKeys = true })
+            json(Json { ignoreUnknownKeys = true })
         }
         install(Logging) {
             level = if (fullLoggingEnabled) LogLevel.ALL else LogLevel.HEADERS
@@ -124,7 +126,7 @@ private class LokaliseClient(
     private val httpClient: HttpClient,
 ) : Lokalise {
 
-    override suspend fun allProjects(queryParams: Map<String, Any>): Result<Projects> {
+    override suspend fun allProjects(queryParams: Map<String, Any>): Result<Projects, Error> {
         val requestParams = queryParams
             .map { "${it.key}=${it.value}" }
             .joinToString(separator = "&")
@@ -139,7 +141,7 @@ private class LokaliseClient(
         projectId: String,
         format: String,
         bodyParams: Map<String, Any>
-    ): Result<FileDownload> {
+    ): Result<FileDownload, Error> {
         val requestBody = bodyParams.toMutableMap()
             .apply { put("format", format) }
             .toRequestBody()
@@ -155,7 +157,7 @@ private class LokaliseClient(
         filename: String,
         langIso: String,
         bodyParams: Map<String, Any>
-    ): Result<FileUpload> {
+    ): Result<FileUpload, Error> {
         val requestBody = bodyParams.toMutableMap()
             .apply {
                 put("data", data)
@@ -172,14 +174,14 @@ private class LokaliseClient(
     override suspend fun retrieveProcess(
         projectId: String,
         processId: String
-    ): Result<RetrievedProcess> {
+    ): Result<RetrievedProcess, Error> {
         return httpClient
             .get("projects/$projectId/processes/$processId")
             .toResult()
     }
 }
 
-private suspend inline fun <reified T> HttpResponse.toResult(): Result<T> =
+private suspend inline fun <reified T> HttpResponse.toResult(): Result<T, Error> =
     if (status.value in 200..299) Result.Success(body<T>())
     else Result.Failure(body<ErrorWrapper>().error)
 

@@ -8,6 +8,8 @@ common-ktor-contentNegotiation = { module = "io.ktor:ktor-client-content-negotia
 common-ktor-serialization = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
 common-ktor-logging = { module = "io.ktor:ktor-client-logging", version.ref = "ktor" }
 
+common-result = "com.ioki.result:result:0.3.0"
+
 common-test-kotlin = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 common-test-ktorMock = { module = "io.ktor:ktor-client-mock", version.ref = "ktor" }
 
