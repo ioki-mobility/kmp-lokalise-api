@@ -120,7 +120,7 @@ class LokaliseClientTest {
             expected = "https://api.lokalise.com/api2/projects/projectId/files/download"
         )
         assertEquals(
-            actual = String(requestData.body.toByteArray()),
+            actual = requestData.body.toByteArray().decodeToString(),
             expected = """{"format":"someFormat"}""".trimIndent()
         )
     }
@@ -154,7 +154,7 @@ class LokaliseClientTest {
             expected = "https://api.lokalise.com/api2/projects/projectId/files/download"
         )
         assertEquals(
-            actual = String(requestData.body.toByteArray()),
+            actual = requestData.body.toByteArray().decodeToString(),
             expected = """{"original_filenames":true,"filter_langs":["en","fr","de"],"directory_prefix":"prefix","format":"xml"}""".trimIndent()
         )
     }
@@ -183,7 +183,7 @@ class LokaliseClientTest {
             expected = "https://api.lokalise.com/api2/projects/projectId/files/upload"
         )
         assertEquals(
-            actual = String(requestData.body.toByteArray()),
+            actual = requestData.body.toByteArray().decodeToString(),
             expected = """{"data":"data","filename":"path/to/file.xml","lang_iso":"en"}""".trimIndent()
         )
     }
@@ -219,7 +219,7 @@ class LokaliseClientTest {
             expected = "https://api.lokalise.com/api2/projects/projectId/files/upload"
         )
         assertEquals(
-            actual = String(requestData.body.toByteArray()),
+            actual = requestData.body.toByteArray().decodeToString(),
             expected = """
                 {"convert_placeholders":true,"tags":["tag1","tag2"],"filter_task_id":42,"data":"data","filename":"path/to/file.xml","lang_iso":"en"}
                 """.trimIndent()
