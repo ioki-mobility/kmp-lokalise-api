@@ -4,6 +4,7 @@ import com.ioki.lokalise.api.models.Error
 import com.ioki.lokalise.api.models.ErrorWrapper
 import com.ioki.lokalise.api.models.FileDownload
 import com.ioki.lokalise.api.models.FileUpload
+import com.ioki.lokalise.api.models.Project
 import com.ioki.lokalise.api.models.Projects
 import com.ioki.lokalise.api.models.RetrievedProcess
 import com.ioki.result.Result
@@ -37,6 +38,14 @@ import kotlinx.serialization.json.JsonPrimitive
 interface Lokalise : LokaliseProjects, LokaliseFiles, LokaliseQueuedProcesses
 
 interface LokaliseProjects {
+
+    /**
+     * Retrieve a project by id.
+     * [Go to API docs](https://developers.lokalise.com/reference/retrieve-a-project)
+     */
+    suspend fun retrieveProject(
+        projectId: String
+    ): Result<Project, Error>
 
     /**
      * List all projects.
@@ -125,6 +134,12 @@ internal fun Lokalise(
 private class LokaliseClient(
     private val httpClient: HttpClient,
 ) : Lokalise {
+
+    override suspend fun retrieveProject(projectId: String): Result<Project, Error> {
+        return httpClient
+            .get("projects/$projectId")
+            .toResult()
+    }
 
     override suspend fun allProjects(queryParams: Map<String, Any>): Result<Projects, Error> {
         val requestParams = queryParams

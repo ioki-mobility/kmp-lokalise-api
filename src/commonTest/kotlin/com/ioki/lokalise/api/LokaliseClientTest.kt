@@ -4,6 +4,7 @@ import com.ioki.lokalise.api.stubs.errorJson
 import com.ioki.lokalise.api.stubs.fileDownloadJson
 import com.ioki.lokalise.api.stubs.fileDownloadWithUnknownFieldJson
 import com.ioki.lokalise.api.stubs.fileUploadJson
+import com.ioki.lokalise.api.stubs.projectJson
 import com.ioki.lokalise.api.stubs.projectsJson
 import com.ioki.lokalise.api.stubs.retrieveProcessJson
 import com.ioki.result.Result
@@ -23,6 +24,61 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class LokaliseClientTest {
+
+    @Test
+    fun `test result value with error on retrieveProject but doesn't matter where`() = runLokaliseTest(
+        errorJson,
+        HttpStatusCode.NotFound
+    ) { lokalise, mockEngine ->
+        val result = lokalise.retrieveProject("projectId")
+
+        assertTrue(result is Result.Failure)
+        assertTrue(result.error.code == 404)
+        assertTrue(result.error.message == "Not Found")
+    }
+
+    @Test
+    fun `test result value without error on retrieveProject`() =
+        runLokaliseTest(projectJson) { lokalise, mockEngine ->
+            val result = lokalise.retrieveProject("projectId")
+
+            assertTrue(result is Result.Success)
+            with(result.data) {
+                assertEquals(
+                    expected = projectId,
+                    actual = "string"
+                )
+                assertEquals(
+                    expected = createdAtTimestamp,
+                    actual = 0
+                )
+                assertEquals(
+                    expected = settings.branching,
+                    actual = true
+                )
+            }
+        }
+
+    @Test
+    fun `test retrieveObject api call`() = runLokaliseTest(projectJson) { lokalise, mockEngine ->
+        lokalise.retrieveProject(
+            projectId = "awesomeProjectId",
+        )
+
+        val requestData = mockEngine.requestHistory.first()
+        assertEquals(
+            actual = requestData.body.contentType,
+            expected = null
+        )
+        assertEquals(
+            actual = requestData.method,
+            expected = HttpMethod.Get
+        )
+        assertEquals(
+            actual = requestData.url.toString(),
+            expected = "https://api.lokalise.com/api2/projects/awesomeProjectId"
+        )
+    }
 
     @Test
     fun `test result value with error on allProjects but doesn't matter where`() = runLokaliseTest(
