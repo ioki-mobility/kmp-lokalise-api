@@ -1,3 +1,8 @@
+@file:OptIn(ExperimentalEncodingApi::class)
+
+import kotlin.io.encoding.Base64
+import kotlin.io.encoding.ExperimentalEncodingApi
+
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.kotlinSerialization)
@@ -60,6 +65,10 @@ val dokkaJar = tasks.register<Jar>("dokkaJar") {
     archiveClassifier.set("javadoc")
 }
 
+val base64EncodedBearerToken = Base64.encode(
+    "${System.getenv("SONATYPE_USER")}:${System.getenv("SONATYPE_PASSWORD")}".toByteArray(),
+)
+
 group = "com.ioki"
 version = "0.0.5-SNAPSHOT"
 publishing {
@@ -109,18 +118,21 @@ publishing {
                 password = project.findProperty("githubPackagesKey") as? String
             }
         }
-        maven("https://s01.oss.sonatype.org/content/repositories/snapshots/") {
+        maven("https://central.sonatype.com/repository/maven-snapshots") {
             name = "SonatypeSnapshot"
             credentials {
                 username = System.getenv("SONATYPE_USER")
                 password = System.getenv("SONATYPE_PASSWORD")
             }
         }
-        maven("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/") {
+        maven("https://ossrh-staging-api.central.sonatype.com/service/local/staging/deploy/maven2/") {
             name = "SonatypeStaging"
-            credentials {
-                username = System.getenv("SONATYPE_USER")
-                password = System.getenv("SONATYPE_PASSWORD")
+            credentials(HttpHeaderCredentials::class) {
+                name = "Authorization"
+                value = "Bearer $base64EncodedBearerToken"
+            }
+            authentication {
+                create<HttpHeaderAuthentication>("header")
             }
         }
     }
@@ -140,4 +152,19 @@ signing {
 tasks.withType<AbstractPublishToMaven>().configureEach {
     val signingTasks = tasks.withType<Sign>()
     mustRunAfter(signingTasks)
+}
+
+tasks.register<Exec>("moveOssrhStagingToCentralPortal") {
+    group = "publishing"
+    description = "Runs after publishAllPublicationsToSonatypeStagingRepository to move the artifacts to the central portal"
+
+    shouldRunAfter("publishAllPublicationsToSonatypeStagingRepository")
+
+    commandLine = listOf(
+        "curl",
+        "-f",
+        "-X", "POST",
+        "-H", "Authorization: Bearer $base64EncodedBearerToken",
+        "https://ossrh-staging-api.central.sonatype.com/manual/upload/defaultRepository/com.ioki",
+    )
 }
