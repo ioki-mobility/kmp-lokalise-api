@@ -25,7 +25,7 @@ jobs:
           distribution: 'zulu'
 
       - name: Publish to GitHub Packages
-        run: ./gradlew publishAllPublicationsToGitHubPackagesRepository -PgithubPackagesUser=$GITHUB_ACTOR -PgithubPackagesKey=${{ secrets.GITHUB_TOKEN }}
+        run: ./gradlew publishAllPublicationsToGitHubPackagesRepository -PgithubPackagesUser=$GITHUB_ACTOR -PgithubPackagesKey=${{ secrets.GITHUB_TOKEN }} -PGPG_SIGNING_REQUIRED
 
       - name: Publish to Sonatype Staging
-        run: ./gradlew publishAllPublicationsToSonatypeStagingRepository moveOssrhStagingToCentralPortal
+        run: ./gradlew publishAllPublicationsToCentralPortal -PGPG_SIGNING_REQUIRED
