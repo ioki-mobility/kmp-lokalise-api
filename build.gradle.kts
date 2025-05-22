@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.kotlinDokka)
     `maven-publish`
     signing
+    alias(libs.plugins.nmcp)
 }
 
 repositories {
@@ -109,15 +110,8 @@ publishing {
                 password = project.findProperty("githubPackagesKey") as? String
             }
         }
-        maven("https://s01.oss.sonatype.org/content/repositories/snapshots/") {
+        maven("https://central.sonatype.com/repository/maven-snapshots") {
             name = "SonatypeSnapshot"
-            credentials {
-                username = System.getenv("SONATYPE_USER")
-                password = System.getenv("SONATYPE_PASSWORD")
-            }
-        }
-        maven("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/") {
-            name = "SonatypeStaging"
             credentials {
                 username = System.getenv("SONATYPE_USER")
                 password = System.getenv("SONATYPE_PASSWORD")
@@ -129,7 +123,8 @@ publishing {
 signing {
     val signingKey = System.getenv("GPG_SIGNING_KEY")
     val signingPassword = System.getenv("GPG_SIGNING_PASSWORD")
-    useInMemoryPgpKeys(signingKey, signingPassword)
+    isRequired = hasProperty("GPG_SIGNING_REQUIRED")
+    if (isRequired) useInMemoryPgpKeys(signingKey, signingPassword)
     sign(publishing.publications)
 }
 
@@ -140,4 +135,12 @@ signing {
 tasks.withType<AbstractPublishToMaven>().configureEach {
     val signingTasks = tasks.withType<Sign>()
     mustRunAfter(signingTasks)
+}
+
+nmcp {
+    centralPortal {
+        username = providers.environmentVariable("SONATYPE_USER")
+        password = providers.environmentVariable("SONATYPE_PASSWORD")
+        publishingType = "USER_MANAGED"
+    }
 }
