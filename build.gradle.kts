@@ -13,7 +13,6 @@ repositories {
 kotlin {
     jvmToolchain(17)
     jvm {
-        withJava()
         testRuns.named("test") {
             executionTask.configure {
                 useJUnitPlatform()
