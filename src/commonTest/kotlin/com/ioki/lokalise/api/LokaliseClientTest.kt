@@ -1,6 +1,7 @@
 package com.ioki.lokalise.api
 
 import com.ioki.lokalise.api.stubs.errorJson
+import com.ioki.lokalise.api.stubs.fileDownloadAsyncJson
 import com.ioki.lokalise.api.stubs.fileDownloadJson
 import com.ioki.lokalise.api.stubs.fileDownloadWithUnknownFieldJson
 import com.ioki.lokalise.api.stubs.fileUploadJson
@@ -17,7 +18,6 @@ import io.ktor.http.Headers
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.headersOf
-import io.ktor.utils.io.core.String
 import kotlinx.coroutines.runBlocking
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -208,6 +208,67 @@ class LokaliseClientTest {
         assertEquals(
             actual = requestData.url.toString(),
             expected = "https://api.lokalise.com/api2/projects/projectId/files/download"
+        )
+        assertEquals(
+            actual = requestData.body.toByteArray().decodeToString(),
+            expected = """{"original_filenames":true,"filter_langs":["en","fr","de"],"directory_prefix":"prefix","format":"xml"}""".trimIndent()
+        )
+    }
+
+    @Test
+    fun `test download files async without params`() = runLokaliseTest(fileDownloadAsyncJson) { lokalise, mockEngine ->
+        lokalise.downloadFilesAsync(
+            projectId = "projectId",
+            format = "someFormat"
+        )
+
+        val requestData = mockEngine.requestHistory.first()
+        assertHeaders(requestData.headers)
+        assertEquals(
+            actual = requestData.body.contentType,
+            expected = ContentType.Application.Json
+        )
+        assertEquals(
+            actual = requestData.method,
+            expected = HttpMethod.Post
+        )
+        assertEquals(
+            actual = requestData.url.toString(),
+            expected = "https://api.lokalise.com/api2/projects/projectId/files/async-download"
+        )
+        assertEquals(
+            actual = requestData.body.toByteArray().decodeToString(),
+            expected = """{"format":"someFormat"}""".trimIndent()
+        )
+    }
+
+    @Test
+    fun `test download files async with params`() = runLokaliseTest(fileDownloadAsyncJson) { lokalise, mockEngine ->
+        val params = mapOf(
+            "original_filenames" to true,
+            "filter_langs" to listOf("en", "fr", "de"),
+            "directory_prefix" to "prefix",
+        )
+
+        lokalise.downloadFilesAsync(
+            projectId = "projectId",
+            format = "xml",
+            bodyParams = params
+        )
+
+        val requestData = mockEngine.requestHistory.first()
+        assertHeaders(requestData.headers)
+        assertEquals(
+            actual = requestData.body.contentType,
+            expected = ContentType.Application.Json
+        )
+        assertEquals(
+            actual = requestData.method,
+            expected = HttpMethod.Post
+        )
+        assertEquals(
+            actual = requestData.url.toString(),
+            expected = "https://api.lokalise.com/api2/projects/projectId/files/async-download"
         )
         assertEquals(
             actual = requestData.body.toByteArray().decodeToString(),

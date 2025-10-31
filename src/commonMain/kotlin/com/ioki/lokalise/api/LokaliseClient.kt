@@ -3,6 +3,7 @@ package com.ioki.lokalise.api
 import com.ioki.lokalise.api.models.Error
 import com.ioki.lokalise.api.models.ErrorWrapper
 import com.ioki.lokalise.api.models.FileDownload
+import com.ioki.lokalise.api.models.FileDownloadAsync
 import com.ioki.lokalise.api.models.FileUpload
 import com.ioki.lokalise.api.models.Project
 import com.ioki.lokalise.api.models.Projects
@@ -67,6 +68,16 @@ interface LokaliseFiles {
         format: String,
         bodyParams: Map<String, Any> = emptyMap()
     ): Result<FileDownload, Error>
+
+    /**
+     * Download files (Async).
+     * [Go to API docs](https://developers.lokalise.com/reference/download-files-async)
+     */
+    suspend fun downloadFilesAsync(
+        projectId: String,
+        format: String,
+        bodyParams: Map<String, Any> = emptyMap()
+    ): Result<FileDownloadAsync, Error>
 
     /**
      * Upload files.
@@ -163,6 +174,20 @@ private class LokaliseClient(
 
         return httpClient
             .post("projects/$projectId/files/download") { setBody(requestBody) }
+            .toResult()
+    }
+
+    override suspend fun downloadFilesAsync(
+        projectId: String,
+        format: String,
+        bodyParams: Map<String, Any>
+    ): Result<FileDownloadAsync, Error> {
+        val requestBody = bodyParams.toMutableMap()
+            .apply { put("format", format) }
+            .toRequestBody()
+
+        return httpClient
+            .post("projects/$projectId/files/async-download") { setBody(requestBody) }
             .toResult()
     }
 

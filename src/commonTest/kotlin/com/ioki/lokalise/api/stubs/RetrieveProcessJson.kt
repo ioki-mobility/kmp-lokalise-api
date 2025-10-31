@@ -12,6 +12,7 @@ val retrieveProcessJson = """
     "created_by_email": "example@example.com",
     "created_at": "2020-04-20 13:43:43 (Etc/UTC)",
     "created_at_timestamp": 1587390223,
+    "download_url": "",
     "details": {
       "files": [
         {

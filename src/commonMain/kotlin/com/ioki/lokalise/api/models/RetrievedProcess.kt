@@ -18,6 +18,7 @@ data class RetrievedProcess(
         @SerialName("created_by_email") val createdByEmail: String,
         @SerialName("created_at") val createdAt: String,
         @SerialName("created_at_timestamp") val createdAtTimestamp: Int,
+        @SerialName("download_url") val downloadUrl: String,
         @SerialName("details") val details: Details,
     ) {
         @Serializable
