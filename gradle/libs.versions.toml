@@ -25,5 +25,5 @@ mingw-ktor-client = { module = "io.ktor:ktor-client-winhttp", version.ref = "kto
 [plugins]
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 kotlinSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
-kotlinDokka = "org.jetbrains.dokka:2.0.0"
+kotlinDokka = "org.jetbrains.dokka:2.1.0"
 nmcp = "com.gradleup.nmcp:0.1.5"
