@@ -1,7 +1,8 @@
 # Lokalise API v2 unofficial KMP client library
 
 [![Tests](https://github.com/ioki-mobility/kmp-lokalise-api/actions/workflows/tests.yml/badge.svg)](https://github.com/ioki-mobility/kmp-lokalise-api/actions/workflows/tests.yml)
-[![Maven Central](https://img.shields.io/maven-central/v/com.ioki/lokalise-api?labelColor=%2324292E&color=%233246c8)](https://central.sonatype.com/artifact/com.ioki/lokalise-api) <!-- Disabled because of: https://github.com/badges/shields/pull/10997 [![Snapshot](https://img.shields.io/nexus/s/com.ioki/lokalise-api?labelColor=%2324292E&color=%234f78ff&server=https://s01.oss.sonatype.org)](https://s01.oss.sonatype.org/content/repositories/snapshots/com/ioki/) -->
+[![Maven Central](https://img.shields.io/maven-central/v/com.ioki/lokalise-api?labelColor=%2324292E&color=%233246c8)](https://central.sonatype.com/artifact/com.ioki/lokalise-api)
+![Snapshot](https://img.shields.io/maven-metadata/v?metadataUrl=https://central.sonatype.com/repository/maven-snapshots/com/ioki/lokalise-api/maven-metadata.xml&labelColor=%2324292E&color=%234f78ff&label=maven-snapshot)
 [![javadoc](https://javadoc.io/badge2/com.ioki/lokalise-api/javadoc.svg?labelColor=%2324292E&color=%236eaaff)](https://javadoc.io/doc/com.ioki/lokalise-api) 
 [![MIT](https://img.shields.io/badge/license-MIT-blue.svg?labelColor=%2324292E&color=%23d11064)](https://github.com/ioki-mobility/kmp-lokalise-api/blob/master/LICENSE.md)
 
