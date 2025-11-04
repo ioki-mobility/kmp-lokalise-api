@@ -122,7 +122,11 @@ internal fun Lokalise(
 ): Lokalise {
     val clientConfig: HttpClientConfig<*>.() -> Unit = {
         install(ContentNegotiation) {
-            json(Json { ignoreUnknownKeys = true })
+            val json = Json {
+                classDiscriminator = "type"
+                ignoreUnknownKeys = true
+            }
+            json(json)
         }
         install(Logging) {
             level = if (fullLoggingEnabled) LogLevel.ALL else LogLevel.HEADERS
