@@ -7,7 +7,8 @@ import com.ioki.lokalise.api.stubs.fileDownloadWithUnknownFieldJson
 import com.ioki.lokalise.api.stubs.fileUploadJson
 import com.ioki.lokalise.api.stubs.projectJson
 import com.ioki.lokalise.api.stubs.projectsJson
-import com.ioki.lokalise.api.stubs.retrieveProcessJson
+import com.ioki.lokalise.api.stubs.retrieveProcessAsyncExportJson
+import com.ioki.lokalise.api.stubs.retrieveProcessFileImportJson
 import com.ioki.result.Result
 import io.ktor.client.engine.HttpClientEngine
 import io.ktor.client.engine.mock.MockEngine
@@ -344,7 +345,26 @@ class LokaliseClientTest {
     }
 
     @Test
-    fun `test retrieve process`() = runLokaliseTest(retrieveProcessJson) { lokalise, mockEngine ->
+    fun `test retrieve process file import`() = runLokaliseTest(retrieveProcessFileImportJson) { lokalise, mockEngine ->
+        lokalise.retrieveProcess(
+            projectId = "projectId",
+            processId = "processId",
+        )
+
+        val requestData = mockEngine.requestHistory.first()
+        assertHeaders(requestData.headers)
+        assertEquals(
+            actual = requestData.method,
+            expected = HttpMethod.Get
+        )
+        assertEquals(
+            actual = requestData.url.toString(),
+            expected = "https://api.lokalise.com/api2/projects/projectId/processes/processId"
+        )
+    }
+
+    @Test
+    fun `test retrieve process async export`() = runLokaliseTest(retrieveProcessAsyncExportJson) { lokalise, mockEngine ->
         lokalise.retrieveProcess(
             projectId = "projectId",
             processId = "processId",

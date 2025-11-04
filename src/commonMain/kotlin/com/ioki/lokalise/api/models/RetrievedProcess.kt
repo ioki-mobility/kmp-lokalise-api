@@ -5,7 +5,6 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.JsonContentPolymorphicSerializer
 import kotlinx.serialization.json.JsonElement
-import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.jsonObject
 
 @Serializable
@@ -33,6 +32,7 @@ sealed interface Process {
         @SerialName("created_by") override val createdBy: Int,
         @SerialName("created_at") override val createdAt: String,
         @SerialName("created_at_timestamp") override val createdAtTimestamp: Long,
+        @SerialName("created_by_email") val createdByEmail: String,
         val details: FileUploadDetails
     ) : Process
 
