@@ -4,9 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class Projects(
-    @SerialName("projects") val projects: List<Project>
-)
+data class Projects(@SerialName("projects") val projects: List<Project>)
 
 @Serializable
 data class Project(
@@ -22,7 +20,7 @@ data class Project(
     @SerialName("base_language_id") val baseLanguageId: Int,
     @SerialName("base_language_iso") val baseLanguageIso: String,
     @SerialName("settings") val settings: Settings,
-    @SerialName("statistics") val statistics: Statistics
+    @SerialName("statistics") val statistics: Statistics,
 ) {
     @Serializable
     data class Settings(
@@ -36,7 +34,7 @@ data class Project(
         @SerialName("segmentation") val segmentation: Boolean,
         @SerialName("custom_translation_statuses") val customTranslationStatuses: Boolean,
         @SerialName("custom_translation_statuses_allow_multiple") val customTranslationStatusesAllowMultiple: Boolean,
-        @SerialName("contributor_preview_download_enabled") val contributorPreviewDownloadEnabled: Boolean
+        @SerialName("contributor_preview_download_enabled") val contributorPreviewDownloadEnabled: Boolean,
     )
 
     @Serializable
@@ -47,7 +45,7 @@ data class Project(
         @SerialName("base_words") val baseWords: Int,
         @SerialName("qa_issues_total") val qaIssuesTotal: Int,
         @SerialName("qa_issues") val qaIssues: QaIssues,
-        @SerialName("languages") val languages: List<Languages>
+        @SerialName("languages") val languages: List<Languages>,
     ) {
         @Serializable
         data class QaIssues(
@@ -66,7 +64,7 @@ data class Project(
             @SerialName("different_numbers") val differentNumbers: Int,
             @SerialName("double_space") val doubleSpace: Int,
             @SerialName("special_placeholder") val specialPlaceholder: Int,
-            @SerialName("unbalanced_brackets") val unbalancedBrackets: Int
+            @SerialName("unbalanced_brackets") val unbalancedBrackets: Int,
 
         )
 
@@ -75,7 +73,7 @@ data class Project(
             @SerialName("language_id") val languageId: Int,
             @SerialName("language_iso") val languageIso: String,
             @SerialName("progress") val progress: Int,
-            @SerialName("words_to_do") val wordsToDo: Int
+            @SerialName("words_to_do") val wordsToDo: Int,
         )
     }
 }
