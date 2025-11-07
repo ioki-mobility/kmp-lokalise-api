@@ -36,7 +36,10 @@ import kotlinx.serialization.json.JsonPrimitive
  * The Lokalise object represents the Lokalise API reference.
  * Check it out [here](https://developers.lokalise.com/reference/lokalise-rest-api)
  */
-interface Lokalise : LokaliseProjects, LokaliseFiles, LokaliseQueuedProcesses
+interface Lokalise :
+    LokaliseProjects,
+    LokaliseFiles,
+    LokaliseQueuedProcesses
 
 interface LokaliseProjects {
 
@@ -44,17 +47,13 @@ interface LokaliseProjects {
      * Retrieve a project by id.
      * [Go to API docs](https://developers.lokalise.com/reference/retrieve-a-project)
      */
-    suspend fun retrieveProject(
-        projectId: String
-    ): Result<Project, Error>
+    suspend fun retrieveProject(projectId: String): Result<Project, Error>
 
     /**
      * List all projects.
      * [Go to API docs](https://developers.lokalise.com/reference/list-all-projects)
      */
-    suspend fun allProjects(
-        queryParams: Map<String, Any> = emptyMap()
-    ): Result<Projects, Error>
+    suspend fun allProjects(queryParams: Map<String, Any> = emptyMap()): Result<Projects, Error>
 }
 
 interface LokaliseFiles {
@@ -66,7 +65,7 @@ interface LokaliseFiles {
     suspend fun downloadFiles(
         projectId: String,
         format: String,
-        bodyParams: Map<String, Any> = emptyMap()
+        bodyParams: Map<String, Any> = emptyMap(),
     ): Result<FileDownload, Error>
 
     /**
@@ -76,7 +75,7 @@ interface LokaliseFiles {
     suspend fun downloadFilesAsync(
         projectId: String,
         format: String,
-        bodyParams: Map<String, Any> = emptyMap()
+        bodyParams: Map<String, Any> = emptyMap(),
     ): Result<FileDownloadAsync, Error>
 
     /**
@@ -88,7 +87,7 @@ interface LokaliseFiles {
         data: String,
         filename: String,
         langIso: String,
-        bodyParams: Map<String, Any> = emptyMap()
+        bodyParams: Map<String, Any> = emptyMap(),
     ): Result<FileUpload, Error>
 }
 
@@ -98,19 +97,13 @@ interface LokaliseQueuedProcesses {
      * Retrieve a process.
      * [Go to API docs](https://developers.lokalise.com/reference/retrieve-a-process)
      */
-    suspend fun retrieveProcess(
-        projectId: String,
-        processId: String,
-    ): Result<RetrievedProcess, Error>
+    suspend fun retrieveProcess(projectId: String, processId: String): Result<RetrievedProcess, Error>
 }
 
 /**
  * Creates a new [Lokalise] object.
  */
-fun Lokalise(
-    token: String,
-    fullLoggingEnabled: Boolean = false,
-): Lokalise = Lokalise(token, fullLoggingEnabled, null)
+fun Lokalise(token: String, fullLoggingEnabled: Boolean = false): Lokalise = Lokalise(token, fullLoggingEnabled, null)
 
 /**
  * Creates a new [Lokalise] object.
@@ -118,7 +111,7 @@ fun Lokalise(
 internal fun Lokalise(
     token: String,
     fullLoggingEnabled: Boolean = false,
-    httpClientEngine: HttpClientEngine? = null
+    httpClientEngine: HttpClientEngine? = null,
 ): Lokalise {
     val clientConfig: HttpClientConfig<*>.() -> Unit = {
         install(ContentNegotiation) {
@@ -140,21 +133,20 @@ internal fun Lokalise(
     }
 
     val client =
-        if (httpClientEngine != null) HttpClient(httpClientEngine, clientConfig)
-        else HttpClient(clientConfig)
+        if (httpClientEngine != null) {
+            HttpClient(httpClientEngine, clientConfig)
+        } else {
+            HttpClient(clientConfig)
+        }
 
     return LokaliseClient(client)
 }
 
-private class LokaliseClient(
-    private val httpClient: HttpClient,
-) : Lokalise {
+private class LokaliseClient(private val httpClient: HttpClient) : Lokalise {
 
-    override suspend fun retrieveProject(projectId: String): Result<Project, Error> {
-        return httpClient
-            .get("projects/$projectId")
-            .toResult()
-    }
+    override suspend fun retrieveProject(projectId: String): Result<Project, Error> = httpClient
+        .get("projects/$projectId")
+        .toResult()
 
     override suspend fun allProjects(queryParams: Map<String, Any>): Result<Projects, Error> {
         val requestParams = queryParams
@@ -170,7 +162,7 @@ private class LokaliseClient(
     override suspend fun downloadFiles(
         projectId: String,
         format: String,
-        bodyParams: Map<String, Any>
+        bodyParams: Map<String, Any>,
     ): Result<FileDownload, Error> {
         val requestBody = bodyParams.toMutableMap()
             .apply { put("format", format) }
@@ -184,7 +176,7 @@ private class LokaliseClient(
     override suspend fun downloadFilesAsync(
         projectId: String,
         format: String,
-        bodyParams: Map<String, Any>
+        bodyParams: Map<String, Any>,
     ): Result<FileDownloadAsync, Error> {
         val requestBody = bodyParams.toMutableMap()
             .apply { put("format", format) }
@@ -200,7 +192,7 @@ private class LokaliseClient(
         data: String,
         filename: String,
         langIso: String,
-        bodyParams: Map<String, Any>
+        bodyParams: Map<String, Any>,
     ): Result<FileUpload, Error> {
         val requestBody = bodyParams.toMutableMap()
             .apply {
@@ -215,19 +207,17 @@ private class LokaliseClient(
             .toResult()
     }
 
-    override suspend fun retrieveProcess(
-        projectId: String,
-        processId: String
-    ): Result<RetrievedProcess, Error> {
-        return httpClient
+    override suspend fun retrieveProcess(projectId: String, processId: String): Result<RetrievedProcess, Error> =
+        httpClient
             .get("projects/$projectId/processes/$processId")
             .toResult()
-    }
 }
 
-private suspend inline fun <reified T> HttpResponse.toResult(): Result<T, Error> =
-    if (status.value in 200..299) Result.Success(body<T>())
-    else Result.Failure(body<ErrorWrapper>().error)
+private suspend inline fun <reified T> HttpResponse.toResult(): Result<T, Error> = if (status.value in 200..299) {
+    Result.Success(body<T>())
+} else {
+    Result.Failure(body<ErrorWrapper>().error)
+}
 
 /**
  * Found at

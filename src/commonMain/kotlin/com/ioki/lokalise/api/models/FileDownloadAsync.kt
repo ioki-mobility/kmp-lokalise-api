@@ -4,6 +4,4 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class FileDownloadAsync(
-    @SerialName("process_id") val processId: String,
-)
+data class FileDownloadAsync(@SerialName("process_id") val processId: String)

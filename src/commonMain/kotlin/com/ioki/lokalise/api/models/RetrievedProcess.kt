@@ -8,9 +8,7 @@ import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.jsonObject
 
 @Serializable
-data class RetrievedProcess(
-    @SerialName("process") val process: Process
-)
+data class RetrievedProcess(@SerialName("process") val process: Process)
 
 @Serializable
 sealed interface Process {
@@ -33,7 +31,7 @@ sealed interface Process {
         @SerialName("created_at") override val createdAt: String,
         @SerialName("created_at_timestamp") override val createdAtTimestamp: Long,
         @SerialName("created_by_email") val createdByEmail: String,
-        val details: FileUploadDetails
+        val details: FileUploadDetails,
     ) : Process
 
     @Serializable
@@ -46,14 +44,12 @@ sealed interface Process {
         @SerialName("created_by") override val createdBy: Int,
         @SerialName("created_at") override val createdAt: String,
         @SerialName("created_at_timestamp") override val createdAtTimestamp: Long,
-        val details: AsyncExportDetails?
+        val details: AsyncExportDetails?,
     ) : Process
 }
 
 @Serializable
-data class FileUploadDetails(
-    @SerialName("files") val files: List<Files>,
-) {
+data class FileUploadDetails(@SerialName("files") val files: List<Files>) {
     @Serializable
     data class Files(
         @SerialName("status") val status: String,
@@ -73,14 +69,14 @@ sealed interface AsyncExportDetails {
     @Serializable
     data class Running(
         @SerialName("items_to_process") val itemsToProcess: Int,
-        @SerialName("items_processed") val itemsProcessed: Int
+        @SerialName("items_processed") val itemsProcessed: Int,
     ) : AsyncExportDetails
 
     @Serializable
     data class Finished(
         @SerialName("file_size_kb") val fileSizeKb: Int,
         @SerialName("total_number_of_keys") val totalNumberOfKeys: Int,
-        @SerialName("download_url") val downloadUrl: String
+        @SerialName("download_url") val downloadUrl: String,
     ) : AsyncExportDetails
 }
 

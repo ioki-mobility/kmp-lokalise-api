@@ -4,10 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class FileUpload(
-    @SerialName("project_id") val projectId: String,
-    @SerialName("process") val process: Process
-) {
+data class FileUpload(@SerialName("project_id") val projectId: String, @SerialName("process") val process: Process) {
     @Serializable
     data class Process(
         @SerialName("process_id") val processId: String,
@@ -17,7 +14,6 @@ data class FileUpload(
         @SerialName("created_by") val createdBy: Int,
         @SerialName("created_by_email") val createdByEmail: String,
         @SerialName("created_at") val createdAt: String,
-        @SerialName("created_at_timestamp") val createdAtTimestamp: Int
+        @SerialName("created_at_timestamp") val createdAtTimestamp: Int,
     )
 }
-

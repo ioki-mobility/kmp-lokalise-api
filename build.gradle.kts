@@ -5,6 +5,7 @@ plugins {
     `maven-publish`
     signing
     alias(libs.plugins.nmcp)
+    alias(libs.plugins.ktlint)
 }
 
 repositories {
