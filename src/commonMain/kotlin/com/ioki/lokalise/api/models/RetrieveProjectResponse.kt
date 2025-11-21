@@ -4,10 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class Projects(@SerialName("projects") val projects: List<Project>)
-
-@Serializable
-data class Project(
+data class RetrieveProjectResponse(
     @SerialName("project_id") val projectId: String,
     @SerialName("project_type") val projectType: String,
     @SerialName("name") val name: String,
@@ -65,7 +62,6 @@ data class Project(
             @SerialName("double_space") val doubleSpace: Int,
             @SerialName("special_placeholder") val specialPlaceholder: Int,
             @SerialName("unbalanced_brackets") val unbalancedBrackets: Int,
-
         )
 
         @Serializable

@@ -8,7 +8,7 @@ import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.jsonObject
 
 @Serializable
-data class RetrievedProcess(@SerialName("process") val process: Process)
+data class RetrieveProcessResponse(@SerialName("process") val process: Process)
 
 @Serializable
 sealed interface Process {
