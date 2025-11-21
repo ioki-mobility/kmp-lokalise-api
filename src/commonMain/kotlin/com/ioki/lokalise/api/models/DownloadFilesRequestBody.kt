@@ -1,7 +1,7 @@
-package  com.ioki.lokalise.api.models
+package com.ioki.lokalise.api.models
 
-import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
 @Serializable
 data class DownloadFilesRequestBody(
@@ -76,5 +76,5 @@ data class DownloadFilesRequestBody(
     @SerialName("filter_project_id")
     val filterProjectId: String? = null,
     @SerialName("compact")
-    val compact: Boolean? = null
+    val compact: Boolean? = null,
 )

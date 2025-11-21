@@ -12,7 +12,7 @@ data class AllProjectsQueryParams(
 ) {
     enum class IncludeOption(val value: Int) {
         EXCLUDE(0),
-        INCLUDE(1)
+        INCLUDE(1),
     }
 }
 

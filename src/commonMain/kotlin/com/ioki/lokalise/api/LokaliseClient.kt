@@ -61,10 +61,7 @@ interface LokaliseFiles {
      * Download files.
      * [Go to API docs](https://developers.lokalise.com/reference/download-files)
      */
-    suspend fun downloadFiles(
-        projectId: String,
-        requestBody: DownloadFilesRequestBody,
-    ): Result<FileDownload, Error>
+    suspend fun downloadFiles(projectId: String, requestBody: DownloadFilesRequestBody): Result<FileDownload, Error>
 
     /**
      * Download files (Async).
@@ -79,10 +76,7 @@ interface LokaliseFiles {
      * Upload files.
      * [Go to API docs](https://developers.lokalise.com/reference/upload-a-file)
      */
-    suspend fun uploadFile(
-        projectId: String,
-        requestBody: UploadFilesRequestBody,
-    ): Result<FileUpload, Error>
+    suspend fun uploadFile(projectId: String, requestBody: UploadFilesRequestBody): Result<FileUpload, Error>
 }
 
 interface LokaliseQueuedProcesses {
@@ -142,42 +136,34 @@ private class LokaliseClient(private val httpClient: HttpClient) : Lokalise {
         .get("projects/$projectId")
         .toResult()
 
-    override suspend fun allProjects(params: AllProjectsQueryParams?): Result<Projects, Error> {
-        return httpClient
-            .get("projects") {
-                params?.toStringValues()?.let {
-                    url.parameters.appendAll(it)
-                }
+    override suspend fun allProjects(params: AllProjectsQueryParams?): Result<Projects, Error> = httpClient
+        .get("projects") {
+            params?.toStringValues()?.let {
+                url.parameters.appendAll(it)
             }
-            .toResult()
-    }
+        }
+        .toResult()
 
     override suspend fun downloadFiles(
         projectId: String,
         requestBody: DownloadFilesRequestBody,
-    ): Result<FileDownload, Error> {
-        return httpClient
-            .post("projects/$projectId/files/download") { setBody(requestBody) }
-            .toResult()
-    }
+    ): Result<FileDownload, Error> = httpClient
+        .post("projects/$projectId/files/download") { setBody(requestBody) }
+        .toResult()
 
     override suspend fun downloadFilesAsync(
         projectId: String,
         requestBody: DownloadFilesRequestBody,
-    ): Result<FileDownloadAsync, Error> {
-        return httpClient
-            .post("projects/$projectId/files/async-download") { setBody(requestBody) }
-            .toResult()
-    }
+    ): Result<FileDownloadAsync, Error> = httpClient
+        .post("projects/$projectId/files/async-download") { setBody(requestBody) }
+        .toResult()
 
     override suspend fun uploadFile(
         projectId: String,
         requestBody: UploadFilesRequestBody,
-    ): Result<FileUpload, Error> {
-        return httpClient
-            .post("projects/$projectId/files/upload") { setBody(requestBody) }
-            .toResult()
-    }
+    ): Result<FileUpload, Error> = httpClient
+        .post("projects/$projectId/files/upload") { setBody(requestBody) }
+        .toResult()
 
     override suspend fun retrieveProcess(projectId: String, processId: String): Result<RetrievedProcess, Error> =
         httpClient
