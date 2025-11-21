@@ -1,5 +1,6 @@
 package com.ioki.lokalise.api
 
+import com.ioki.lokalise.api.models.AllProjectsQueryParams
 import com.ioki.lokalise.api.stubs.errorJson
 import com.ioki.lokalise.api.stubs.fileDownloadAsyncJson
 import com.ioki.lokalise.api.stubs.fileDownloadJson
@@ -134,12 +135,13 @@ class LokaliseClientTest {
 
     @Test
     fun `test list all projects with params`() = runLokaliseTest(projectsJson) { lokalise, mockEngine ->
-        val params = mapOf(
-            "limit" to 1,
-            "filter_names" to "first,second",
+        val params = AllProjectsQueryParams(
+            limit = 2,
+            filterNames = "first,second",
+            includeSettings = AllProjectsQueryParams.IncludeOption.INCLUDE
         )
 
-        lokalise.allProjects(queryParams = params)
+        lokalise.allProjects(params)
 
         val requestData = mockEngine.requestHistory.first()
         assertHeaders(requestData.headers)
@@ -150,7 +152,7 @@ class LokaliseClientTest {
         )
         assertEquals(
             actual = requestData.url.toString(),
-            expected = "https://api.lokalise.com/api2/projects?limit=1&filter_names=first,second",
+            expected = "https://api.lokalise.com/api2/projects?filter_names=first%2Csecond&include_settings=1&limit=2",
         )
     }
 

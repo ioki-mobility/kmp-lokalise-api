@@ -1,5 +1,6 @@
 package com.ioki.lokalise.api
 
+import com.ioki.lokalise.api.models.AllProjectsQueryParams
 import com.ioki.lokalise.api.models.Error
 import com.ioki.lokalise.api.models.ErrorWrapper
 import com.ioki.lokalise.api.models.FileDownload
@@ -8,6 +9,7 @@ import com.ioki.lokalise.api.models.FileUpload
 import com.ioki.lokalise.api.models.Project
 import com.ioki.lokalise.api.models.Projects
 import com.ioki.lokalise.api.models.RetrievedProcess
+import com.ioki.lokalise.api.models.toStringValues
 import com.ioki.result.Result
 import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
@@ -53,7 +55,7 @@ interface LokaliseProjects {
      * List all projects.
      * [Go to API docs](https://developers.lokalise.com/reference/list-all-projects)
      */
-    suspend fun allProjects(queryParams: Map<String, Any> = emptyMap()): Result<Projects, Error>
+    suspend fun allProjects(params: AllProjectsQueryParams? = null): Result<Projects, Error>
 }
 
 interface LokaliseFiles {
@@ -148,14 +150,13 @@ private class LokaliseClient(private val httpClient: HttpClient) : Lokalise {
         .get("projects/$projectId")
         .toResult()
 
-    override suspend fun allProjects(queryParams: Map<String, Any>): Result<Projects, Error> {
-        val requestParams = queryParams
-            .map { "${it.key}=${it.value}" }
-            .joinToString(separator = "&")
-            .run { if (isNotBlank()) "?$this" else this }
-
+    override suspend fun allProjects(params: AllProjectsQueryParams?): Result<Projects, Error> {
         return httpClient
-            .get("projects$requestParams")
+            .get("projects") {
+                params?.toStringValues()?.let {
+                    url.parameters.appendAll(it)
+                }
+            }
             .toResult()
     }
 
