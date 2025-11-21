@@ -1,6 +1,7 @@
 package com.ioki.lokalise.api
 
 import com.ioki.lokalise.api.models.AllProjectsQueryParams
+import com.ioki.lokalise.api.models.DownloadFilesRequestBody
 import com.ioki.lokalise.api.stubs.errorJson
 import com.ioki.lokalise.api.stubs.fileDownloadAsyncJson
 import com.ioki.lokalise.api.stubs.fileDownloadJson
@@ -138,7 +139,7 @@ class LokaliseClientTest {
         val params = AllProjectsQueryParams(
             limit = 2,
             filterNames = "first,second",
-            includeSettings = AllProjectsQueryParams.IncludeOption.INCLUDE
+            includeSettings = AllProjectsQueryParams.IncludeOption.INCLUDE,
         )
 
         lokalise.allProjects(params)
@@ -158,9 +159,13 @@ class LokaliseClientTest {
 
     @Test
     fun `test download files without params`() = runLokaliseTest(fileDownloadJson) { lokalise, mockEngine ->
+        val requestBody = DownloadFilesRequestBody(
+            format = "someFormat",
+        )
+
         lokalise.downloadFiles(
             projectId = "projectId",
-            format = "someFormat",
+            requestBody = requestBody,
         )
 
         val requestData = mockEngine.requestHistory.first()
@@ -186,16 +191,16 @@ class LokaliseClientTest {
     @Suppress("ktlint:standard:max-line-length")
     @Test
     fun `test download files with params`() = runLokaliseTest(fileDownloadJson) { lokalise, mockEngine ->
-        val params = mapOf(
-            "original_filenames" to true,
-            "filter_langs" to listOf("en", "fr", "de"),
-            "directory_prefix" to "prefix",
+        val requestBody = DownloadFilesRequestBody(
+            format = "xml",
+            originalFilenames = true,
+            filterLangs = listOf("en", "fr", "de"),
+            directoryPrefix = "prefix",
         )
 
         lokalise.downloadFiles(
             projectId = "projectId",
-            format = "xml",
-            bodyParams = params,
+            requestBody = requestBody,
         )
 
         val requestData = mockEngine.requestHistory.first()
@@ -214,15 +219,19 @@ class LokaliseClientTest {
         )
         assertEquals(
             actual = requestData.body.toByteArray().decodeToString(),
-            expected = """{"original_filenames":true,"filter_langs":["en","fr","de"],"directory_prefix":"prefix","format":"xml"}""".trimIndent(),
+            expected = """{"format":"xml","original_filenames":true,"directory_prefix":"prefix","filter_langs":["en","fr","de"]}""".trimIndent(),
         )
     }
 
     @Test
     fun `test download files async without params`() = runLokaliseTest(fileDownloadAsyncJson) { lokalise, mockEngine ->
+        val requestBody = DownloadFilesRequestBody(
+            format = "someFormat",
+        )
+
         lokalise.downloadFilesAsync(
             projectId = "projectId",
-            format = "someFormat",
+            requestBody = requestBody,
         )
 
         val requestData = mockEngine.requestHistory.first()
@@ -248,16 +257,16 @@ class LokaliseClientTest {
     @Suppress("ktlint:standard:max-line-length")
     @Test
     fun `test download files async with params`() = runLokaliseTest(fileDownloadAsyncJson) { lokalise, mockEngine ->
-        val params = mapOf(
-            "original_filenames" to true,
-            "filter_langs" to listOf("en", "fr", "de"),
-            "directory_prefix" to "prefix",
+        val requestBody = DownloadFilesRequestBody(
+            format = "xml",
+            originalFilenames = true,
+            filterLangs = listOf("en", "fr", "de"),
+            directoryPrefix = "prefix",
         )
 
         lokalise.downloadFilesAsync(
             projectId = "projectId",
-            format = "xml",
-            bodyParams = params,
+            requestBody = requestBody,
         )
 
         val requestData = mockEngine.requestHistory.first()
@@ -276,7 +285,7 @@ class LokaliseClientTest {
         )
         assertEquals(
             actual = requestData.body.toByteArray().decodeToString(),
-            expected = """{"original_filenames":true,"filter_langs":["en","fr","de"],"directory_prefix":"prefix","format":"xml"}""".trimIndent(),
+            expected = """{"format":"xml","original_filenames":true,"directory_prefix":"prefix","filter_langs":["en","fr","de"]}""".trimIndent(),
         )
     }
 
@@ -390,9 +399,13 @@ class LokaliseClientTest {
 
     @Test
     fun `test ignore unknown fields`() = runLokaliseTest(fileDownloadWithUnknownFieldJson) { lokalise, mockEngine ->
+        val requestBody = DownloadFilesRequestBody(
+            format = "someFormat",
+        )
+
         lokalise.downloadFiles(
             projectId = "projectId",
-            format = "someFormat",
+            requestBody = requestBody,
         )
 
         val requestData = mockEngine.requestHistory.first()

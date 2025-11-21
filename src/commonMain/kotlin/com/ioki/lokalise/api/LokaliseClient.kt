@@ -1,6 +1,7 @@
 package com.ioki.lokalise.api
 
 import com.ioki.lokalise.api.models.AllProjectsQueryParams
+import com.ioki.lokalise.api.models.DownloadFilesRequestBody
 import com.ioki.lokalise.api.models.Error
 import com.ioki.lokalise.api.models.ErrorWrapper
 import com.ioki.lokalise.api.models.FileDownload
@@ -66,8 +67,7 @@ interface LokaliseFiles {
      */
     suspend fun downloadFiles(
         projectId: String,
-        format: String,
-        bodyParams: Map<String, Any> = emptyMap(),
+        requestBody: DownloadFilesRequestBody,
     ): Result<FileDownload, Error>
 
     /**
@@ -76,8 +76,7 @@ interface LokaliseFiles {
      */
     suspend fun downloadFilesAsync(
         projectId: String,
-        format: String,
-        bodyParams: Map<String, Any> = emptyMap(),
+        requestBody: DownloadFilesRequestBody,
     ): Result<FileDownloadAsync, Error>
 
     /**
@@ -162,13 +161,8 @@ private class LokaliseClient(private val httpClient: HttpClient) : Lokalise {
 
     override suspend fun downloadFiles(
         projectId: String,
-        format: String,
-        bodyParams: Map<String, Any>,
+        requestBody: DownloadFilesRequestBody,
     ): Result<FileDownload, Error> {
-        val requestBody = bodyParams.toMutableMap()
-            .apply { put("format", format) }
-            .toRequestBody()
-
         return httpClient
             .post("projects/$projectId/files/download") { setBody(requestBody) }
             .toResult()
@@ -176,13 +170,8 @@ private class LokaliseClient(private val httpClient: HttpClient) : Lokalise {
 
     override suspend fun downloadFilesAsync(
         projectId: String,
-        format: String,
-        bodyParams: Map<String, Any>,
+        requestBody: DownloadFilesRequestBody,
     ): Result<FileDownloadAsync, Error> {
-        val requestBody = bodyParams.toMutableMap()
-            .apply { put("format", format) }
-            .toRequestBody()
-
         return httpClient
             .post("projects/$projectId/files/async-download") { setBody(requestBody) }
             .toResult()
