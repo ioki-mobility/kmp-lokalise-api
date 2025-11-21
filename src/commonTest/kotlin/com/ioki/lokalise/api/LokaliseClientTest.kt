@@ -1,17 +1,17 @@
 package com.ioki.lokalise.api
 
-import com.ioki.lokalise.api.models.AllProjectsQueryParams
-import com.ioki.lokalise.api.models.DownloadFilesRequestBody
-import com.ioki.lokalise.api.models.UploadFilesRequestBody
+import com.ioki.lokalise.api.models.AllProjectsRequest
+import com.ioki.lokalise.api.models.DownloadFilesRequest
+import com.ioki.lokalise.api.models.UploadFileRequest
+import com.ioki.lokalise.api.stubs.allProjectsJson
+import com.ioki.lokalise.api.stubs.downloadFilesAsyncJson
+import com.ioki.lokalise.api.stubs.downloadFilesJson
+import com.ioki.lokalise.api.stubs.downloadFilesWithUnknownFieldJson
 import com.ioki.lokalise.api.stubs.errorJson
-import com.ioki.lokalise.api.stubs.fileDownloadAsyncJson
-import com.ioki.lokalise.api.stubs.fileDownloadJson
-import com.ioki.lokalise.api.stubs.fileDownloadWithUnknownFieldJson
-import com.ioki.lokalise.api.stubs.fileUploadJson
-import com.ioki.lokalise.api.stubs.projectJson
-import com.ioki.lokalise.api.stubs.projectsJson
 import com.ioki.lokalise.api.stubs.retrieveProcessAsyncExportJson
 import com.ioki.lokalise.api.stubs.retrieveProcessFileImportJson
+import com.ioki.lokalise.api.stubs.retrieveProjectJson
+import com.ioki.lokalise.api.stubs.uploadFileJson
 import com.ioki.result.Result
 import io.ktor.client.engine.HttpClientEngine
 import io.ktor.client.engine.mock.MockEngine
@@ -42,28 +42,29 @@ class LokaliseClientTest {
     }
 
     @Test
-    fun `test result value without error on retrieveProject`() = runLokaliseTest(projectJson) { lokalise, mockEngine ->
-        val result = lokalise.retrieveProject("projectId")
+    fun `test result value without error on retrieveProject`() =
+        runLokaliseTest(retrieveProjectJson) { lokalise, mockEngine ->
+            val result = lokalise.retrieveProject("projectId")
 
-        assertTrue(result is Result.Success)
-        with(result.data) {
-            assertEquals(
-                expected = projectId,
-                actual = "string",
-            )
-            assertEquals(
-                expected = createdAtTimestamp,
-                actual = 0,
-            )
-            assertEquals(
-                expected = settings.branching,
-                actual = true,
-            )
+            assertTrue(result is Result.Success)
+            with(result.data) {
+                assertEquals(
+                    expected = projectId,
+                    actual = "string",
+                )
+                assertEquals(
+                    expected = createdAtTimestamp,
+                    actual = 0,
+                )
+                assertEquals(
+                    expected = settings.branching,
+                    actual = true,
+                )
+            }
         }
-    }
 
     @Test
-    fun `test retrieveProject api call`() = runLokaliseTest(projectJson) { lokalise, mockEngine ->
+    fun `test retrieveProject api call`() = runLokaliseTest(retrieveProjectJson) { lokalise, mockEngine ->
         lokalise.retrieveProject(
             projectId = "awesomeProjectId",
         )
@@ -97,7 +98,7 @@ class LokaliseClientTest {
 
     @Test
     fun `test result value without error on allProjects but doesn't matter where`() =
-        runLokaliseTest(projectsJson) { lokalise, mockEngine ->
+        runLokaliseTest(allProjectsJson) { lokalise, mockEngine ->
             val result = lokalise.allProjects()
 
             assertTrue(result is Result.Success)
@@ -119,7 +120,7 @@ class LokaliseClientTest {
         }
 
     @Test
-    fun `test list all projects without params`() = runLokaliseTest(projectsJson) { lokalise, mockEngine ->
+    fun `test list all projects without params`() = runLokaliseTest(allProjectsJson) { lokalise, mockEngine ->
         lokalise.allProjects()
 
         val requestData = mockEngine.requestHistory.first()
@@ -136,11 +137,11 @@ class LokaliseClientTest {
     }
 
     @Test
-    fun `test list all projects with params`() = runLokaliseTest(projectsJson) { lokalise, mockEngine ->
-        val params = AllProjectsQueryParams(
+    fun `test list all projects with params`() = runLokaliseTest(allProjectsJson) { lokalise, mockEngine ->
+        val params = AllProjectsRequest(
             limit = 2,
             filterNames = "first,second",
-            includeSettings = AllProjectsQueryParams.IncludeOption.INCLUDE,
+            includeSettings = AllProjectsRequest.IncludeOption.INCLUDE,
         )
 
         lokalise.allProjects(params)
@@ -159,8 +160,8 @@ class LokaliseClientTest {
     }
 
     @Test
-    fun `test download files without params`() = runLokaliseTest(fileDownloadJson) { lokalise, mockEngine ->
-        val requestBody = DownloadFilesRequestBody(
+    fun `test download files without params`() = runLokaliseTest(downloadFilesJson) { lokalise, mockEngine ->
+        val requestBody = DownloadFilesRequest(
             format = "someFormat",
         )
 
@@ -191,8 +192,8 @@ class LokaliseClientTest {
 
     @Suppress("ktlint:standard:max-line-length")
     @Test
-    fun `test download files with params`() = runLokaliseTest(fileDownloadJson) { lokalise, mockEngine ->
-        val requestBody = DownloadFilesRequestBody(
+    fun `test download files with params`() = runLokaliseTest(downloadFilesJson) { lokalise, mockEngine ->
+        val requestBody = DownloadFilesRequest(
             format = "xml",
             originalFilenames = true,
             filterLangs = listOf("en", "fr", "de"),
@@ -225,8 +226,8 @@ class LokaliseClientTest {
     }
 
     @Test
-    fun `test download files async without params`() = runLokaliseTest(fileDownloadAsyncJson) { lokalise, mockEngine ->
-        val requestBody = DownloadFilesRequestBody(
+    fun `test download files async without params`() = runLokaliseTest(downloadFilesAsyncJson) { lokalise, mockEngine ->
+        val requestBody = DownloadFilesRequest(
             format = "someFormat",
         )
 
@@ -257,8 +258,8 @@ class LokaliseClientTest {
 
     @Suppress("ktlint:standard:max-line-length")
     @Test
-    fun `test download files async with params`() = runLokaliseTest(fileDownloadAsyncJson) { lokalise, mockEngine ->
-        val requestBody = DownloadFilesRequestBody(
+    fun `test download files async with params`() = runLokaliseTest(downloadFilesAsyncJson) { lokalise, mockEngine ->
+        val requestBody = DownloadFilesRequest(
             format = "xml",
             originalFilenames = true,
             filterLangs = listOf("en", "fr", "de"),
@@ -291,8 +292,8 @@ class LokaliseClientTest {
     }
 
     @Test
-    fun `test upload file without params`() = runLokaliseTest(fileUploadJson) { lokalise, mockEngine ->
-        val requestBody = UploadFilesRequestBody(
+    fun `test upload file without params`() = runLokaliseTest(uploadFileJson) { lokalise, mockEngine ->
+        val requestBody = UploadFileRequest(
             data = "data",
             filename = "path/to/file.xml",
             langIso = "en",
@@ -324,8 +325,8 @@ class LokaliseClientTest {
     }
 
     @Test
-    fun `test upload file with params`() = runLokaliseTest(fileUploadJson) { lokalise, mockEngine ->
-        val requestBody = UploadFilesRequestBody(
+    fun `test upload file with params`() = runLokaliseTest(uploadFileJson) { lokalise, mockEngine ->
+        val requestBody = UploadFileRequest(
             data = "data",
             filename = "path/to/file.xml",
             langIso = "en",
@@ -403,8 +404,8 @@ class LokaliseClientTest {
     }
 
     @Test
-    fun `test ignore unknown fields`() = runLokaliseTest(fileDownloadWithUnknownFieldJson) { lokalise, mockEngine ->
-        val requestBody = DownloadFilesRequestBody(
+    fun `test ignore unknown fields`() = runLokaliseTest(downloadFilesWithUnknownFieldJson) { lokalise, mockEngine ->
+        val requestBody = DownloadFilesRequest(
             format = "someFormat",
         )
 

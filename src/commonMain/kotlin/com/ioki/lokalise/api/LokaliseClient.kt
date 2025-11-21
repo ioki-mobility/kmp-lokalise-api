@@ -1,16 +1,16 @@
 package com.ioki.lokalise.api
 
-import com.ioki.lokalise.api.models.AllProjectsQueryParams
-import com.ioki.lokalise.api.models.DownloadFilesRequestBody
+import com.ioki.lokalise.api.models.AllProjectsRequest
+import com.ioki.lokalise.api.models.DownloadFilesAsyncResponse
+import com.ioki.lokalise.api.models.DownloadFilesRequest
+import com.ioki.lokalise.api.models.DownloadFilesResponse
 import com.ioki.lokalise.api.models.Error
 import com.ioki.lokalise.api.models.ErrorWrapper
-import com.ioki.lokalise.api.models.FileDownload
-import com.ioki.lokalise.api.models.FileDownloadAsync
-import com.ioki.lokalise.api.models.FileUpload
-import com.ioki.lokalise.api.models.Project
-import com.ioki.lokalise.api.models.Projects
-import com.ioki.lokalise.api.models.RetrievedProcess
-import com.ioki.lokalise.api.models.UploadFilesRequestBody
+import com.ioki.lokalise.api.models.RetrieveProjectResponse
+import com.ioki.lokalise.api.models.AllProjectsResponse
+import com.ioki.lokalise.api.models.RetrieveProcessResponse
+import com.ioki.lokalise.api.models.UploadFileRequest
+import com.ioki.lokalise.api.models.UploadFileResponse
 import com.ioki.lokalise.api.models.toStringValues
 import com.ioki.result.Result
 import io.ktor.client.HttpClient
@@ -46,13 +46,13 @@ interface LokaliseProjects {
      * Retrieve a project by id.
      * [Go to API docs](https://developers.lokalise.com/reference/retrieve-a-project)
      */
-    suspend fun retrieveProject(projectId: String): Result<Project, Error>
+    suspend fun retrieveProject(projectId: String): Result<RetrieveProjectResponse, Error>
 
     /**
      * List all projects.
      * [Go to API docs](https://developers.lokalise.com/reference/list-all-projects)
      */
-    suspend fun allProjects(params: AllProjectsQueryParams? = null): Result<Projects, Error>
+    suspend fun allProjects(params: AllProjectsRequest? = null): Result<AllProjectsResponse, Error>
 }
 
 interface LokaliseFiles {
@@ -61,7 +61,10 @@ interface LokaliseFiles {
      * Download files.
      * [Go to API docs](https://developers.lokalise.com/reference/download-files)
      */
-    suspend fun downloadFiles(projectId: String, requestBody: DownloadFilesRequestBody): Result<FileDownload, Error>
+    suspend fun downloadFiles(
+        projectId: String,
+        requestBody: DownloadFilesRequest,
+    ): Result<DownloadFilesResponse, Error>
 
     /**
      * Download files (Async).
@@ -69,14 +72,14 @@ interface LokaliseFiles {
      */
     suspend fun downloadFilesAsync(
         projectId: String,
-        requestBody: DownloadFilesRequestBody,
-    ): Result<FileDownloadAsync, Error>
+        requestBody: DownloadFilesRequest,
+    ): Result<DownloadFilesAsyncResponse, Error>
 
     /**
      * Upload files.
      * [Go to API docs](https://developers.lokalise.com/reference/upload-a-file)
      */
-    suspend fun uploadFile(projectId: String, requestBody: UploadFilesRequestBody): Result<FileUpload, Error>
+    suspend fun uploadFile(projectId: String, requestBody: UploadFileRequest): Result<UploadFileResponse, Error>
 }
 
 interface LokaliseQueuedProcesses {
@@ -85,7 +88,7 @@ interface LokaliseQueuedProcesses {
      * Retrieve a process.
      * [Go to API docs](https://developers.lokalise.com/reference/retrieve-a-process)
      */
-    suspend fun retrieveProcess(projectId: String, processId: String): Result<RetrievedProcess, Error>
+    suspend fun retrieveProcess(projectId: String, processId: String): Result<RetrieveProcessResponse, Error>
 }
 
 /**
@@ -132,11 +135,11 @@ internal fun Lokalise(
 
 private class LokaliseClient(private val httpClient: HttpClient) : Lokalise {
 
-    override suspend fun retrieveProject(projectId: String): Result<Project, Error> = httpClient
+    override suspend fun retrieveProject(projectId: String): Result<RetrieveProjectResponse, Error> = httpClient
         .get("projects/$projectId")
         .toResult()
 
-    override suspend fun allProjects(params: AllProjectsQueryParams?): Result<Projects, Error> = httpClient
+    override suspend fun allProjects(params: AllProjectsRequest?): Result<AllProjectsResponse, Error> = httpClient
         .get("projects") {
             params?.toStringValues()?.let {
                 url.parameters.appendAll(it)
@@ -146,29 +149,31 @@ private class LokaliseClient(private val httpClient: HttpClient) : Lokalise {
 
     override suspend fun downloadFiles(
         projectId: String,
-        requestBody: DownloadFilesRequestBody,
-    ): Result<FileDownload, Error> = httpClient
+        requestBody: DownloadFilesRequest,
+    ): Result<DownloadFilesResponse, Error> = httpClient
         .post("projects/$projectId/files/download") { setBody(requestBody) }
         .toResult()
 
     override suspend fun downloadFilesAsync(
         projectId: String,
-        requestBody: DownloadFilesRequestBody,
-    ): Result<FileDownloadAsync, Error> = httpClient
+        requestBody: DownloadFilesRequest,
+    ): Result<DownloadFilesAsyncResponse, Error> = httpClient
         .post("projects/$projectId/files/async-download") { setBody(requestBody) }
         .toResult()
 
     override suspend fun uploadFile(
         projectId: String,
-        requestBody: UploadFilesRequestBody,
-    ): Result<FileUpload, Error> = httpClient
+        requestBody: UploadFileRequest,
+    ): Result<UploadFileResponse, Error> = httpClient
         .post("projects/$projectId/files/upload") { setBody(requestBody) }
         .toResult()
 
-    override suspend fun retrieveProcess(projectId: String, processId: String): Result<RetrievedProcess, Error> =
-        httpClient
-            .get("projects/$projectId/processes/$processId")
-            .toResult()
+    override suspend fun retrieveProcess(
+        projectId: String,
+        processId: String,
+    ): Result<RetrieveProcessResponse, Error> = httpClient
+        .get("projects/$projectId/processes/$processId")
+        .toResult()
 }
 
 private suspend inline fun <reified T> HttpResponse.toResult(): Result<T, Error> = if (status.value in 200..299) {

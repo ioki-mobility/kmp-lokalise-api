@@ -2,7 +2,7 @@ package com.ioki.lokalise.api.models
 
 import io.ktor.util.StringValues
 
-data class AllProjectsQueryParams(
+data class AllProjectsRequest(
     val filterTeamId: Int? = null,
     val filterNames: String? = null,
     val includeStatistics: IncludeOption? = null,
@@ -16,7 +16,7 @@ data class AllProjectsQueryParams(
     }
 }
 
-internal fun AllProjectsQueryParams.toStringValues(): StringValues = StringValues.build {
+internal fun AllProjectsRequest.toStringValues(): StringValues = StringValues.build {
     filterTeamId?.let { append("filter_team_id", it.toString()) }
     filterNames?.let { append("filter_names", it) }
     includeStatistics?.let { append("include_statistics", it.value.toString()) }

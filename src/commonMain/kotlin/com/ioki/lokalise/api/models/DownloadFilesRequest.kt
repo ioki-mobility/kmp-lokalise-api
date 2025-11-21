@@ -4,7 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class DownloadFilesRequestBody(
+data class DownloadFilesRequest(
     @SerialName("format")
     val format: String,
     @SerialName("original_filenames")

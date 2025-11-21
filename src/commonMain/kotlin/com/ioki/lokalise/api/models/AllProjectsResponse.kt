@@ -4,7 +4,4 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class FileDownload(
-    @SerialName("project_id") val projectId: String,
-    @SerialName("bundle_url") val bundleUrl: String,
-)
+data class AllProjectsResponse(@SerialName("projects") val projects: List<RetrieveProjectResponse>)

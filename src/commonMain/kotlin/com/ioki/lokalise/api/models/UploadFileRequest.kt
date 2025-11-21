@@ -4,7 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class UploadFilesRequestBody(
+data class UploadFileRequest(
     @SerialName("data")
     val data: String,
     @SerialName("filename")

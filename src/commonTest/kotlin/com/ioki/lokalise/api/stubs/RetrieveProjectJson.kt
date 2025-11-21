@@ -1,6 +1,6 @@
 package com.ioki.lokalise.api.stubs
 
-val projectJson = """
+val retrieveProjectJson = """
     {
       "project_id": "string",
       "project_type": "string",

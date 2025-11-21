@@ -1,6 +1,6 @@
 package com.ioki.lokalise.api.stubs
 
-val fileUploadJson = """
+val uploadFileJson = """
 {
   "project_id": "string",
   "process": {
