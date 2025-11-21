@@ -2,6 +2,7 @@ package com.ioki.lokalise.api
 
 import com.ioki.lokalise.api.models.AllProjectsQueryParams
 import com.ioki.lokalise.api.models.DownloadFilesRequestBody
+import com.ioki.lokalise.api.models.UploadFilesRequestBody
 import com.ioki.lokalise.api.stubs.errorJson
 import com.ioki.lokalise.api.stubs.fileDownloadAsyncJson
 import com.ioki.lokalise.api.stubs.fileDownloadJson
@@ -291,11 +292,15 @@ class LokaliseClientTest {
 
     @Test
     fun `test upload file without params`() = runLokaliseTest(fileUploadJson) { lokalise, mockEngine ->
-        lokalise.uploadFile(
-            projectId = "projectId",
+        val requestBody = UploadFilesRequestBody(
             data = "data",
             filename = "path/to/file.xml",
             langIso = "en",
+        )
+
+        lokalise.uploadFile(
+            projectId = "projectId",
+            requestBody = requestBody,
         )
 
         val requestData = mockEngine.requestHistory.first()
@@ -320,18 +325,18 @@ class LokaliseClientTest {
 
     @Test
     fun `test upload file with params`() = runLokaliseTest(fileUploadJson) { lokalise, mockEngine ->
-        val params = mapOf(
-            "convert_placeholders" to true,
-            "tags" to listOf("tag1", "tag2"),
-            "filter_task_id" to 42,
+        val requestBody = UploadFilesRequestBody(
+            data = "data",
+            filename = "path/to/file.xml",
+            langIso = "en",
+            convertPlaceholders = true,
+            tags = listOf("tag1", "tag2"),
+            filterTaskId = 42,
         )
 
         lokalise.uploadFile(
             projectId = "projectId",
-            data = "data",
-            filename = "path/to/file.xml",
-            langIso = "en",
-            bodyParams = params,
+            requestBody = requestBody,
         )
 
         val requestData = mockEngine.requestHistory.first()
@@ -351,7 +356,7 @@ class LokaliseClientTest {
         assertEquals(
             actual = requestData.body.toByteArray().decodeToString(),
             expected = """
-                {"convert_placeholders":true,"tags":["tag1","tag2"],"filter_task_id":42,"data":"data","filename":"path/to/file.xml","lang_iso":"en"}
+                {"data":"data","filename":"path/to/file.xml","lang_iso":"en","convert_placeholders":true,"tags":["tag1","tag2"],"filter_task_id":42}
             """.trimIndent(),
         )
     }

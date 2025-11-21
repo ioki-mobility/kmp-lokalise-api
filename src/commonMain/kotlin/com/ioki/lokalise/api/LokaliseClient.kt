@@ -10,6 +10,7 @@ import com.ioki.lokalise.api.models.FileUpload
 import com.ioki.lokalise.api.models.Project
 import com.ioki.lokalise.api.models.Projects
 import com.ioki.lokalise.api.models.RetrievedProcess
+import com.ioki.lokalise.api.models.UploadFilesRequestBody
 import com.ioki.lokalise.api.models.toStringValues
 import com.ioki.result.Result
 import io.ktor.client.HttpClient
@@ -29,11 +30,6 @@ import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonArray
-import kotlinx.serialization.json.JsonElement
-import kotlinx.serialization.json.JsonNull
-import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.JsonPrimitive
 
 /**
  * The Lokalise object represents the Lokalise API reference.
@@ -85,10 +81,7 @@ interface LokaliseFiles {
      */
     suspend fun uploadFile(
         projectId: String,
-        data: String,
-        filename: String,
-        langIso: String,
-        bodyParams: Map<String, Any> = emptyMap(),
+        requestBody: UploadFilesRequestBody,
     ): Result<FileUpload, Error>
 }
 
@@ -179,19 +172,8 @@ private class LokaliseClient(private val httpClient: HttpClient) : Lokalise {
 
     override suspend fun uploadFile(
         projectId: String,
-        data: String,
-        filename: String,
-        langIso: String,
-        bodyParams: Map<String, Any>,
+        requestBody: UploadFilesRequestBody,
     ): Result<FileUpload, Error> {
-        val requestBody = bodyParams.toMutableMap()
-            .apply {
-                put("data", data)
-                put("filename", filename)
-                put("lang_iso", langIso)
-            }
-            .toRequestBody()
-
         return httpClient
             .post("projects/$projectId/files/upload") { setBody(requestBody) }
             .toResult()
@@ -208,24 +190,3 @@ private suspend inline fun <reified T> HttpResponse.toResult(): Result<T, Error>
 } else {
     Result.Failure(body<ErrorWrapper>().error)
 }
-
-/**
- * Found at
- * [kotlinx.serialization/issues#746](https://github.com/Kotlin/kotlinx.serialization/issues/746#issuecomment-863099397)
- */
-private fun Any?.toJsonElement(): JsonElement = when (this) {
-    null -> JsonNull
-    is JsonElement -> this
-    is Number -> JsonPrimitive(this)
-    is Boolean -> JsonPrimitive(this)
-    is String -> JsonPrimitive(this)
-    is Array<*> -> JsonArray(map { it.toJsonElement() })
-    is List<*> -> JsonArray(map { it.toJsonElement() })
-    is Map<*, *> -> JsonObject(map { it.key.toString() to it.value.toJsonElement() }.toMap())
-    else -> error("Unknown type!")
-}
-
-/**
- * Returns a Map with values `Any` to a Map with values of `JsonElement`
- */
-private fun Map<String, Any>.toRequestBody() = mapValues { it.value.toJsonElement() }
