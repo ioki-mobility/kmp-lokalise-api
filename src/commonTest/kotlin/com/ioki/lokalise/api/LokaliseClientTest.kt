@@ -60,7 +60,7 @@ class LokaliseClientTest {
     }
 
     @Test
-    fun `test retrieveObject api call`() = runLokaliseTest(projectJson) { lokalise, mockEngine ->
+    fun `test retrieveProject api call`() = runLokaliseTest(projectJson) { lokalise, mockEngine ->
         lokalise.retrieveProject(
             projectId = "awesomeProjectId",
         )
