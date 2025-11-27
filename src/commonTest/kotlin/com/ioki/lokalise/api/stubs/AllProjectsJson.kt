@@ -1,6 +1,6 @@
 package com.ioki.lokalise.api.stubs
 
-val projectsJson = """
+val allProjectsJson = """
 {
   "projects": [
     {

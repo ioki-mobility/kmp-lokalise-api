@@ -4,7 +4,10 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class FileUpload(@SerialName("project_id") val projectId: String, @SerialName("process") val process: Process) {
+data class UploadFileResponse(
+    @SerialName("project_id") val projectId: String,
+    @SerialName("process") val process: Process,
+) {
     @Serializable
     data class Process(
         @SerialName("process_id") val processId: String,

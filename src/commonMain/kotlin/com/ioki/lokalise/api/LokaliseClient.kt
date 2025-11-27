@@ -1,13 +1,17 @@
 package com.ioki.lokalise.api
 
+import com.ioki.lokalise.api.models.AllProjectsRequest
+import com.ioki.lokalise.api.models.DownloadFilesAsyncResponse
+import com.ioki.lokalise.api.models.DownloadFilesRequest
+import com.ioki.lokalise.api.models.DownloadFilesResponse
 import com.ioki.lokalise.api.models.Error
 import com.ioki.lokalise.api.models.ErrorWrapper
-import com.ioki.lokalise.api.models.FileDownload
-import com.ioki.lokalise.api.models.FileDownloadAsync
-import com.ioki.lokalise.api.models.FileUpload
-import com.ioki.lokalise.api.models.Project
-import com.ioki.lokalise.api.models.Projects
-import com.ioki.lokalise.api.models.RetrievedProcess
+import com.ioki.lokalise.api.models.RetrieveProjectResponse
+import com.ioki.lokalise.api.models.AllProjectsResponse
+import com.ioki.lokalise.api.models.RetrieveProcessResponse
+import com.ioki.lokalise.api.models.UploadFileRequest
+import com.ioki.lokalise.api.models.UploadFileResponse
+import com.ioki.lokalise.api.models.toStringValues
 import com.ioki.result.Result
 import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
@@ -26,11 +30,6 @@ import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonArray
-import kotlinx.serialization.json.JsonElement
-import kotlinx.serialization.json.JsonNull
-import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.JsonPrimitive
 
 /**
  * The Lokalise object represents the Lokalise API reference.
@@ -47,13 +46,13 @@ interface LokaliseProjects {
      * Retrieve a project by id.
      * [Go to API docs](https://developers.lokalise.com/reference/retrieve-a-project)
      */
-    suspend fun retrieveProject(projectId: String): Result<Project, Error>
+    suspend fun retrieveProject(projectId: String): Result<RetrieveProjectResponse, Error>
 
     /**
      * List all projects.
      * [Go to API docs](https://developers.lokalise.com/reference/list-all-projects)
      */
-    suspend fun allProjects(queryParams: Map<String, Any> = emptyMap()): Result<Projects, Error>
+    suspend fun allProjects(params: AllProjectsRequest? = null): Result<AllProjectsResponse, Error>
 }
 
 interface LokaliseFiles {
@@ -64,9 +63,8 @@ interface LokaliseFiles {
      */
     suspend fun downloadFiles(
         projectId: String,
-        format: String,
-        bodyParams: Map<String, Any> = emptyMap(),
-    ): Result<FileDownload, Error>
+        requestBody: DownloadFilesRequest,
+    ): Result<DownloadFilesResponse, Error>
 
     /**
      * Download files (Async).
@@ -74,21 +72,14 @@ interface LokaliseFiles {
      */
     suspend fun downloadFilesAsync(
         projectId: String,
-        format: String,
-        bodyParams: Map<String, Any> = emptyMap(),
-    ): Result<FileDownloadAsync, Error>
+        requestBody: DownloadFilesRequest,
+    ): Result<DownloadFilesAsyncResponse, Error>
 
     /**
      * Upload files.
      * [Go to API docs](https://developers.lokalise.com/reference/upload-a-file)
      */
-    suspend fun uploadFile(
-        projectId: String,
-        data: String,
-        filename: String,
-        langIso: String,
-        bodyParams: Map<String, Any> = emptyMap(),
-    ): Result<FileUpload, Error>
+    suspend fun uploadFile(projectId: String, requestBody: UploadFileRequest): Result<UploadFileResponse, Error>
 }
 
 interface LokaliseQueuedProcesses {
@@ -97,7 +88,7 @@ interface LokaliseQueuedProcesses {
      * Retrieve a process.
      * [Go to API docs](https://developers.lokalise.com/reference/retrieve-a-process)
      */
-    suspend fun retrieveProcess(projectId: String, processId: String): Result<RetrievedProcess, Error>
+    suspend fun retrieveProcess(projectId: String, processId: String): Result<RetrieveProcessResponse, Error>
 }
 
 /**
@@ -144,73 +135,45 @@ internal fun Lokalise(
 
 private class LokaliseClient(private val httpClient: HttpClient) : Lokalise {
 
-    override suspend fun retrieveProject(projectId: String): Result<Project, Error> = httpClient
+    override suspend fun retrieveProject(projectId: String): Result<RetrieveProjectResponse, Error> = httpClient
         .get("projects/$projectId")
         .toResult()
 
-    override suspend fun allProjects(queryParams: Map<String, Any>): Result<Projects, Error> {
-        val requestParams = queryParams
-            .map { "${it.key}=${it.value}" }
-            .joinToString(separator = "&")
-            .run { if (isNotBlank()) "?$this" else this }
-
-        return httpClient
-            .get("projects$requestParams")
-            .toResult()
-    }
+    override suspend fun allProjects(params: AllProjectsRequest?): Result<AllProjectsResponse, Error> = httpClient
+        .get("projects") {
+            params?.toStringValues()?.let {
+                url.parameters.appendAll(it)
+            }
+        }
+        .toResult()
 
     override suspend fun downloadFiles(
         projectId: String,
-        format: String,
-        bodyParams: Map<String, Any>,
-    ): Result<FileDownload, Error> {
-        val requestBody = bodyParams.toMutableMap()
-            .apply { put("format", format) }
-            .toRequestBody()
-
-        return httpClient
-            .post("projects/$projectId/files/download") { setBody(requestBody) }
-            .toResult()
-    }
+        requestBody: DownloadFilesRequest,
+    ): Result<DownloadFilesResponse, Error> = httpClient
+        .post("projects/$projectId/files/download") { setBody(requestBody) }
+        .toResult()
 
     override suspend fun downloadFilesAsync(
         projectId: String,
-        format: String,
-        bodyParams: Map<String, Any>,
-    ): Result<FileDownloadAsync, Error> {
-        val requestBody = bodyParams.toMutableMap()
-            .apply { put("format", format) }
-            .toRequestBody()
-
-        return httpClient
-            .post("projects/$projectId/files/async-download") { setBody(requestBody) }
-            .toResult()
-    }
+        requestBody: DownloadFilesRequest,
+    ): Result<DownloadFilesAsyncResponse, Error> = httpClient
+        .post("projects/$projectId/files/async-download") { setBody(requestBody) }
+        .toResult()
 
     override suspend fun uploadFile(
         projectId: String,
-        data: String,
-        filename: String,
-        langIso: String,
-        bodyParams: Map<String, Any>,
-    ): Result<FileUpload, Error> {
-        val requestBody = bodyParams.toMutableMap()
-            .apply {
-                put("data", data)
-                put("filename", filename)
-                put("lang_iso", langIso)
-            }
-            .toRequestBody()
+        requestBody: UploadFileRequest,
+    ): Result<UploadFileResponse, Error> = httpClient
+        .post("projects/$projectId/files/upload") { setBody(requestBody) }
+        .toResult()
 
-        return httpClient
-            .post("projects/$projectId/files/upload") { setBody(requestBody) }
-            .toResult()
-    }
-
-    override suspend fun retrieveProcess(projectId: String, processId: String): Result<RetrievedProcess, Error> =
-        httpClient
-            .get("projects/$projectId/processes/$processId")
-            .toResult()
+    override suspend fun retrieveProcess(
+        projectId: String,
+        processId: String,
+    ): Result<RetrieveProcessResponse, Error> = httpClient
+        .get("projects/$projectId/processes/$processId")
+        .toResult()
 }
 
 private suspend inline fun <reified T> HttpResponse.toResult(): Result<T, Error> = if (status.value in 200..299) {
@@ -218,24 +181,3 @@ private suspend inline fun <reified T> HttpResponse.toResult(): Result<T, Error>
 } else {
     Result.Failure(body<ErrorWrapper>().error)
 }
-
-/**
- * Found at
- * [kotlinx.serialization/issues#746](https://github.com/Kotlin/kotlinx.serialization/issues/746#issuecomment-863099397)
- */
-private fun Any?.toJsonElement(): JsonElement = when (this) {
-    null -> JsonNull
-    is JsonElement -> this
-    is Number -> JsonPrimitive(this)
-    is Boolean -> JsonPrimitive(this)
-    is String -> JsonPrimitive(this)
-    is Array<*> -> JsonArray(map { it.toJsonElement() })
-    is List<*> -> JsonArray(map { it.toJsonElement() })
-    is Map<*, *> -> JsonObject(map { it.key.toString() to it.value.toJsonElement() }.toMap())
-    else -> error("Unknown type!")
-}
-
-/**
- * Returns a Map with values `Any` to a Map with values of `JsonElement`
- */
-private fun Map<String, Any>.toRequestBody() = mapValues { it.value.toJsonElement() }
