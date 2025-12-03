@@ -12,6 +12,7 @@ common-result = "com.ioki.result:result:0.3.0"
 
 common-test-kotlin = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 common-test-ktorMock = { module = "io.ktor:ktor-client-mock", version.ref = "ktor" }
+common-test-kotest = "io.kotest:kotest-assertions-core:6.0.7"
 
 jvm-ktor-client = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }
 jvm-ktor-logging = "ch.qos.logback:logback-classic:1.5.21"

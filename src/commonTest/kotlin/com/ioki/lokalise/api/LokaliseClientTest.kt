@@ -1,7 +1,10 @@
 package com.ioki.lokalise.api
 
 import com.ioki.lokalise.api.models.AllProjectsRequest
+import com.ioki.lokalise.api.models.AllProjectsResponse
 import com.ioki.lokalise.api.models.DownloadFilesRequest
+import com.ioki.lokalise.api.models.Error
+import com.ioki.lokalise.api.models.RetrieveProjectResponse
 import com.ioki.lokalise.api.models.UploadFileRequest
 import com.ioki.lokalise.api.stubs.allProjectsJson
 import com.ioki.lokalise.api.stubs.downloadFilesAsyncJson
@@ -13,19 +16,21 @@ import com.ioki.lokalise.api.stubs.retrieveProcessFileImportJson
 import com.ioki.lokalise.api.stubs.retrieveProjectJson
 import com.ioki.lokalise.api.stubs.uploadFileJson
 import com.ioki.result.Result
+import io.kotest.matchers.collections.shouldContainAll
+import io.kotest.matchers.shouldBe
+import io.kotest.matchers.types.shouldBeInstanceOf
 import io.ktor.client.engine.HttpClientEngine
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
 import io.ktor.client.engine.mock.toByteArray
+import io.ktor.client.request.HttpRequestData
 import io.ktor.http.ContentType
-import io.ktor.http.Headers
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.headersOf
+import io.ktor.util.flattenEntries
 import kotlinx.coroutines.runBlocking
 import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 
 class LokaliseClientTest {
 
@@ -36,9 +41,10 @@ class LokaliseClientTest {
     ) { lokalise, mockEngine ->
         val result = lokalise.retrieveProject("projectId")
 
-        assertTrue(result is Result.Failure)
-        assertTrue(result.error.code == 404)
-        assertTrue(result.error.message == "Not Found")
+        result.shouldBeInstanceOf<Result.Failure<Error>> {
+            it.error.code shouldBe 404
+            it.error.message shouldBe "Not Found"
+        }
     }
 
     @Test
@@ -46,20 +52,12 @@ class LokaliseClientTest {
         runLokaliseTest(retrieveProjectJson) { lokalise, mockEngine ->
             val result = lokalise.retrieveProject("projectId")
 
-            assertTrue(result is Result.Success)
-            with(result.data) {
-                assertEquals(
-                    expected = projectId,
-                    actual = "string",
-                )
-                assertEquals(
-                    expected = createdAtTimestamp,
-                    actual = 0,
-                )
-                assertEquals(
-                    expected = settings.branching,
-                    actual = true,
-                )
+            result.shouldBeInstanceOf<Result.Success<RetrieveProjectResponse>> {
+                with(it.data) {
+                    projectId shouldBe "string"
+                    createdAtTimestamp shouldBe 0
+                    settings.branching shouldBe true
+                }
             }
         }
 
@@ -69,19 +67,11 @@ class LokaliseClientTest {
             projectId = "awesomeProjectId",
         )
 
-        val requestData = mockEngine.requestHistory.first()
-        assertEquals(
-            actual = requestData.body.contentType,
-            expected = null,
-        )
-        assertEquals(
-            actual = requestData.method,
-            expected = HttpMethod.Get,
-        )
-        assertEquals(
-            actual = requestData.url.toString(),
-            expected = "https://api.lokalise.com/api2/projects/awesomeProjectId",
-        )
+        with(mockEngine.requestHistory.first()) {
+            assertHeadersAndContentType()
+            method shouldBe HttpMethod.Get
+            url.toString() shouldBe "https://api.lokalise.com/api2/projects/awesomeProjectId"
+        }
     }
 
     @Test
@@ -91,9 +81,10 @@ class LokaliseClientTest {
     ) { lokalise, mockEngine ->
         val result = lokalise.allProjects()
 
-        assertTrue(result is Result.Failure)
-        assertTrue(result.error.code == 404)
-        assertTrue(result.error.message == "Not Found")
+        result.shouldBeInstanceOf<Result.Failure<Error>> {
+            it.error.code shouldBe 404
+            it.error.message shouldBe "Not Found"
+        }
     }
 
     @Test
@@ -101,21 +92,13 @@ class LokaliseClientTest {
         runLokaliseTest(allProjectsJson) { lokalise, mockEngine ->
             val result = lokalise.allProjects()
 
-            assertTrue(result is Result.Success)
-            assertTrue(result.data.projects.size == 1)
-            with(result.data.projects.first()) {
-                assertEquals(
-                    expected = projectId,
-                    actual = "string",
-                )
-                assertEquals(
-                    expected = createdAtTimestamp,
-                    actual = 0,
-                )
-                assertEquals(
-                    expected = settings.branching,
-                    actual = true,
-                )
+            result.shouldBeInstanceOf<Result.Success<AllProjectsResponse>> {
+                it.data.projects.size shouldBe 1
+                with(it.data.projects.first()) {
+                    projectId shouldBe "string"
+                    createdAtTimestamp shouldBe 0
+                    settings.branching shouldBe true
+                }
             }
         }
 
@@ -124,18 +107,12 @@ class LokaliseClientTest {
         lokalise.allProjects()
 
         val requestData = mockEngine.requestHistory.first()
-        assertHeaders(requestData.headers)
-        assertTrue(requestData.headers.contains("Content-Type", "application/json"))
-        assertEquals(
-            actual = requestData.method,
-            expected = HttpMethod.Get,
-        )
-        assertEquals(
-            actual = requestData.url.toString(),
-            expected = "https://api.lokalise.com/api2/projects",
-        )
+        requestData.assertHeadersAndContentType()
+        requestData.method shouldBe HttpMethod.Get
+        requestData.url.toString() shouldBe "https://api.lokalise.com/api2/projects"
     }
 
+    @Suppress("ktlint:standard:max-line-length")
     @Test
     fun `test list all projects with params`() = runLokaliseTest(allProjectsJson) { lokalise, mockEngine ->
         val params = AllProjectsRequest(
@@ -147,16 +124,10 @@ class LokaliseClientTest {
         lokalise.allProjects(params)
 
         val requestData = mockEngine.requestHistory.first()
-        assertHeaders(requestData.headers)
-        assertTrue(requestData.headers.contains("Content-Type", "application/json"))
-        assertEquals(
-            actual = requestData.method,
-            expected = HttpMethod.Get,
-        )
-        assertEquals(
-            actual = requestData.url.toString(),
-            expected = "https://api.lokalise.com/api2/projects?filter_names=first%2Csecond&include_settings=1&limit=2",
-        )
+        requestData.assertHeadersAndContentType()
+        requestData.method shouldBe HttpMethod.Get
+        requestData.url.toString() shouldBe
+            "https://api.lokalise.com/api2/projects?filter_names=first%2Csecond&include_settings=1&limit=2"
     }
 
     @Test
@@ -171,23 +142,10 @@ class LokaliseClientTest {
         )
 
         val requestData = mockEngine.requestHistory.first()
-        assertHeaders(requestData.headers)
-        assertEquals(
-            actual = requestData.body.contentType,
-            expected = ContentType.Application.Json,
-        )
-        assertEquals(
-            actual = requestData.method,
-            expected = HttpMethod.Post,
-        )
-        assertEquals(
-            actual = requestData.url.toString(),
-            expected = "https://api.lokalise.com/api2/projects/projectId/files/download",
-        )
-        assertEquals(
-            actual = requestData.body.toByteArray().decodeToString(),
-            expected = """{"format":"someFormat"}""".trimIndent(),
-        )
+        requestData.assertHeadersAndContentType()
+        requestData.method shouldBe HttpMethod.Post
+        requestData.url.toString() shouldBe "https://api.lokalise.com/api2/projects/projectId/files/download"
+        requestData.body.toByteArray().decodeToString() shouldBe """{"format":"someFormat"}""".trimIndent()
     }
 
     @Suppress("ktlint:standard:max-line-length")
@@ -206,23 +164,11 @@ class LokaliseClientTest {
         )
 
         val requestData = mockEngine.requestHistory.first()
-        assertHeaders(requestData.headers)
-        assertEquals(
-            actual = requestData.body.contentType,
-            expected = ContentType.Application.Json,
-        )
-        assertEquals(
-            actual = requestData.method,
-            expected = HttpMethod.Post,
-        )
-        assertEquals(
-            actual = requestData.url.toString(),
-            expected = "https://api.lokalise.com/api2/projects/projectId/files/download",
-        )
-        assertEquals(
-            actual = requestData.body.toByteArray().decodeToString(),
-            expected = """{"format":"xml","original_filenames":true,"directory_prefix":"prefix","filter_langs":["en","fr","de"]}""".trimIndent(),
-        )
+        requestData.assertHeadersAndContentType()
+        requestData.method shouldBe HttpMethod.Post
+        requestData.url.toString() shouldBe "https://api.lokalise.com/api2/projects/projectId/files/download"
+        requestData.body.toByteArray().decodeToString() shouldBe
+            """{"format":"xml","original_filenames":true,"directory_prefix":"prefix","filter_langs":["en","fr","de"]}""".trimIndent()
     }
 
     @Test
@@ -237,23 +183,10 @@ class LokaliseClientTest {
         )
 
         val requestData = mockEngine.requestHistory.first()
-        assertHeaders(requestData.headers)
-        assertEquals(
-            actual = requestData.body.contentType,
-            expected = ContentType.Application.Json,
-        )
-        assertEquals(
-            actual = requestData.method,
-            expected = HttpMethod.Post,
-        )
-        assertEquals(
-            actual = requestData.url.toString(),
-            expected = "https://api.lokalise.com/api2/projects/projectId/files/async-download",
-        )
-        assertEquals(
-            actual = requestData.body.toByteArray().decodeToString(),
-            expected = """{"format":"someFormat"}""".trimIndent(),
-        )
+        requestData.assertHeadersAndContentType()
+        requestData.method shouldBe HttpMethod.Post
+        requestData.url.toString() shouldBe "https://api.lokalise.com/api2/projects/projectId/files/async-download"
+        requestData.body.toByteArray().decodeToString() shouldBe """{"format":"someFormat"}""".trimIndent()
     }
 
     @Suppress("ktlint:standard:max-line-length")
@@ -272,23 +205,11 @@ class LokaliseClientTest {
         )
 
         val requestData = mockEngine.requestHistory.first()
-        assertHeaders(requestData.headers)
-        assertEquals(
-            actual = requestData.body.contentType,
-            expected = ContentType.Application.Json,
-        )
-        assertEquals(
-            actual = requestData.method,
-            expected = HttpMethod.Post,
-        )
-        assertEquals(
-            actual = requestData.url.toString(),
-            expected = "https://api.lokalise.com/api2/projects/projectId/files/async-download",
-        )
-        assertEquals(
-            actual = requestData.body.toByteArray().decodeToString(),
-            expected = """{"format":"xml","original_filenames":true,"directory_prefix":"prefix","filter_langs":["en","fr","de"]}""".trimIndent(),
-        )
+        requestData.assertHeadersAndContentType()
+        requestData.method shouldBe HttpMethod.Post
+        requestData.url.toString() shouldBe "https://api.lokalise.com/api2/projects/projectId/files/async-download"
+        requestData.body.toByteArray().decodeToString() shouldBe
+            """{"format":"xml","original_filenames":true,"directory_prefix":"prefix","filter_langs":["en","fr","de"]}""".trimIndent()
     }
 
     @Test
@@ -305,23 +226,11 @@ class LokaliseClientTest {
         )
 
         val requestData = mockEngine.requestHistory.first()
-        assertHeaders(requestData.headers)
-        assertEquals(
-            actual = requestData.body.contentType,
-            expected = ContentType.Application.Json,
-        )
-        assertEquals(
-            actual = requestData.method,
-            expected = HttpMethod.Post,
-        )
-        assertEquals(
-            actual = requestData.url.toString(),
-            expected = "https://api.lokalise.com/api2/projects/projectId/files/upload",
-        )
-        assertEquals(
-            actual = requestData.body.toByteArray().decodeToString(),
-            expected = """{"data":"data","filename":"path/to/file.xml","lang_iso":"en"}""".trimIndent(),
-        )
+        requestData.assertHeadersAndContentType()
+        requestData.method shouldBe HttpMethod.Post
+        requestData.url.toString() shouldBe "https://api.lokalise.com/api2/projects/projectId/files/upload"
+        requestData.body.toByteArray()
+            .decodeToString() shouldBe """{"data":"data","filename":"path/to/file.xml","lang_iso":"en"}""".trimIndent()
     }
 
     @Test
@@ -341,25 +250,12 @@ class LokaliseClientTest {
         )
 
         val requestData = mockEngine.requestHistory.first()
-        assertHeaders(requestData.headers)
-        assertEquals(
-            actual = requestData.body.contentType,
-            expected = ContentType.Application.Json,
-        )
-        assertEquals(
-            actual = requestData.method,
-            expected = HttpMethod.Post,
-        )
-        assertEquals(
-            actual = requestData.url.toString(),
-            expected = "https://api.lokalise.com/api2/projects/projectId/files/upload",
-        )
-        assertEquals(
-            actual = requestData.body.toByteArray().decodeToString(),
-            expected = """
-                {"data":"data","filename":"path/to/file.xml","lang_iso":"en","convert_placeholders":true,"tags":["tag1","tag2"],"filter_task_id":42}
-            """.trimIndent(),
-        )
+        requestData.assertHeadersAndContentType()
+        requestData.method shouldBe HttpMethod.Post
+        requestData.url.toString() shouldBe "https://api.lokalise.com/api2/projects/projectId/files/upload"
+        requestData.body.toByteArray().decodeToString() shouldBe """
+            {"data":"data","filename":"path/to/file.xml","lang_iso":"en","convert_placeholders":true,"tags":["tag1","tag2"],"filter_task_id":42}
+        """.trimIndent()
     }
 
     @Test
@@ -370,15 +266,9 @@ class LokaliseClientTest {
         )
 
         val requestData = mockEngine.requestHistory.first()
-        assertHeaders(requestData.headers)
-        assertEquals(
-            actual = requestData.method,
-            expected = HttpMethod.Get,
-        )
-        assertEquals(
-            actual = requestData.url.toString(),
-            expected = "https://api.lokalise.com/api2/projects/projectId/processes/processId",
-        )
+        requestData.assertHeadersAndContentType()
+        requestData.method shouldBe HttpMethod.Get
+        requestData.url.toString() shouldBe "https://api.lokalise.com/api2/projects/projectId/processes/processId"
     }
 
     @Test
@@ -392,15 +282,9 @@ class LokaliseClientTest {
         )
 
         val requestData = mockEngine.requestHistory.first()
-        assertHeaders(requestData.headers)
-        assertEquals(
-            actual = requestData.method,
-            expected = HttpMethod.Get,
-        )
-        assertEquals(
-            actual = requestData.url.toString(),
-            expected = "https://api.lokalise.com/api2/projects/projectId/processes/processId",
-        )
+        requestData.assertHeadersAndContentType()
+        requestData.method shouldBe HttpMethod.Get
+        requestData.url.toString() shouldBe "https://api.lokalise.com/api2/projects/projectId/processes/processId"
     }
 
     @Test
@@ -415,12 +299,19 @@ class LokaliseClientTest {
         )
 
         val requestData = mockEngine.requestHistory.first()
-        assertHeaders(requestData.headers)
+        requestData.assertHeadersAndContentType()
     }
 
-    private fun assertHeaders(headers: Headers) = assertTrue {
-        headers.contains("Accept", "application/json") &&
-            headers.contains("X-Api-Token", "sec3tT0k3n")
+    private fun HttpRequestData.assertHeadersAndContentType() {
+        headers.flattenEntries().sortedBy { it.first }.shouldContainAll(
+            "Accept" to "application/json",
+            "X-Api-Token" to "sec3tT0k3n",
+        )
+        if (method == HttpMethod.Post) {
+            body.contentType shouldBe ContentType.Application.Json
+        } else {
+            body.contentType shouldBe null
+        }
     }
 
     private fun runLokaliseTest(
