@@ -38,6 +38,7 @@ kotlin {
         commonTest.dependencies {
             implementation(libs.common.test.kotlin)
             implementation(libs.common.test.ktorMock)
+            implementation(libs.common.test.kotest)
         }
         jvmMain.dependencies {
             implementation(libs.jvm.ktor.client)
