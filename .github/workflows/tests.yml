@@ -59,7 +59,7 @@ jobs:
           sudo apt-get install -y libcurl4-gnutls-dev
 
       - name: Cache Gradle
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: |
             ~/.gradle/caches
